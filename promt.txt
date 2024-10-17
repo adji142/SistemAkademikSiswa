@@ -1,0 +1,14 @@
+Controller
+
+Please Create new controller with detail bellow :
+1. Create controller with name KelasController
+2. Create Controller code with my style
+3. Create Controller with detail table colom name bellow : NamaKelas
+
+View List
+please create new view with title "Tahun Ajaran" and table header name : NamaKelas
+
+View Input
+Please Create new View with my code style and page name is Input Tahun Ajaran, with input detail in bellow :
+1. NamaKelas is text
+2. id is hidden for parse to editing controller
