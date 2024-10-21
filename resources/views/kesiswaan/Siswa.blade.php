@@ -41,34 +41,35 @@
                         <div class="card card-custom gutter-b bg-white border-0">
                             <div class="card-body">
 
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                            <!-- Tombol di kiri -->
-                            <div class="d-flex">
-                                <button id="uploadButton" class="btn btn-success text-white font-weight-bold me-2">Upload Ke Mesin</button>
-                                <button id="naikKelasButton" class="btn btn-success text-white font-weight-bold">Naik Kelas</button>
-                            </div>
-                            
-                            <!-- Filter Dropdown di kanan -->
-                            <div class="d-flex">
-                                <select id="filterKelas" class="form-control w-auto me-2">
-                                    <option value=""><- Filter Jenis Kelas -></option>
-                                    @foreach ($kelas as $th)
-                                        <option value="{{ $th->id }}">
-                                            {{ $th->NamaKelas }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+                                    <!-- Tombol di kiri -->
+                                    <div class="d-flex flex-wrap mb-2 mb-md-0">
+                                        <button id="uploadButton" class="btn btn-success text-white font-weight-bold me-2">Upload Ke Mesin</button>
+                                        <button id="naikKelasButton" class="btn btn-success text-white font-weight-bold">Naik Kelas</button>
+                                    </div>
+                                    
+                                    <!-- Filter Dropdown di kanan -->
+                                    <div class="d-flex flex-wrap">
+                                        <select id="filterKelas" class="form-control w-auto me-2 mb-2 mb-md-0">
+                                            <option value=""><- Filter Jenis Kelas -></option>
+                                            @foreach ($kelas as $th)
+                                                <option value="{{ $th->id }}">
+                                                    {{ $th->NamaKelas }}
+                                                </option>
+                                            @endforeach
+                                        </select>
 
-                                <select id="filterKelasParalel" class="form-control w-auto">
-                                    <option value=""><- Filter Kelas Paralel -></option>
-                                    @foreach ($kelasParalel as $th)
-                                        <option value="{{ $th->id }}">
-                                            {{ $th->NamaKelasParalel }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                                        <select id="filterKelasParalel" class="form-control w-auto">
+                                            <option value=""><- Filter Kelas Paralel -></option>
+                                            @foreach ($kelasParalel as $th)
+                                                <option value="{{ $th->id }}">
+                                                    {{ $th->NamaKelasParalel }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
 
                                 <div class="table-responsive" id="printableTable">
                                     <table id="orderTable" class="display" style="width:100%">
