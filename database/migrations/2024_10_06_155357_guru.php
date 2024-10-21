@@ -18,7 +18,7 @@ class Guru extends Migration
             $table->string('NamaGuru');
             $table->string('Email');
             $table->string('NoHP');
-            $table->integer('KelasID'); // Jika Terisi maka di list di beri tanda dengan warna / keterangan kalau guru ini wali kelas sesuai kelas yang dipilih
+            $table->integer('KelasID')->nullable(); // Jika Terisi maka di list di beri tanda dengan warna / keterangan kalau guru ini wali kelas sesuai kelas yang dipilih
             $table->integer('MapelID');
             $table->timestamps();
         });

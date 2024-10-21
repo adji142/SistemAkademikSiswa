@@ -53,7 +53,6 @@ class GuruController extends Controller
             'NamaGuru' => 'required|string',
             'Email' => 'required|email|unique:guru',
             'NoHP' => 'required|numeric',
-            'KelasID' => 'required|integer|exists:kelas,id',
             'MapelID' => 'required|integer|exists:matapelajaran,id',
         ]);
 
