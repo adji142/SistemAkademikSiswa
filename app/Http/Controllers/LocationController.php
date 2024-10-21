@@ -10,6 +10,17 @@ use App\Models\Kelurahan;
 
 class LocationController extends Controller
 {
+
+    public function getProvinsi($provID)
+    {
+        try {
+            $kota = Provinsi::where('prov_id', $provID)->get();
+            return response()->json($kota);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
     public function getKota($provID)
     {
         try {

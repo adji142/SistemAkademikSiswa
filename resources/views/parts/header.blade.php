@@ -472,7 +472,7 @@
 	<script src="{{asset('api/pace/pace.js')}}"></script>
 	<script src="{{asset('api/mcustomscrollbar/jquery.mCustomScrollbar.concat.min.js')}}"></script>
 	<script src="{{asset('api/quill/quill.min.js')}}"></script>
-	<script src="{{asset('api/editor/classic.ckeditor.js')}}"></script>
+	<!-- <script src="{{asset('api/editor/classic.ckeditor.js')}}"></script> -->
 	<script src="{{asset('api/editor/inline.ckeditor.js')}}"></script>
 	<script src="{{asset('api/datatable/jquery.dataTables.min.js')}}"></script>
 	<script src="{{asset('api/select2/select2.min.js')}}"></script>

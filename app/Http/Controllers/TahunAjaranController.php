@@ -22,6 +22,16 @@ class TahunAjaranController extends Controller
         ]);
     }
 
+    public function getTahunAjaran($tahunAjaranID)
+    {
+        try {
+            $tahunAjaran = TahunAjaran::where('id', $tahunAjaranID)->get();
+            return response()->json($tahunAjaran);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
     // Form for single record (Create or Update)
     public function Form($id = null)
     {

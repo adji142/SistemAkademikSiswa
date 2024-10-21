@@ -12,6 +12,9 @@ use App\Http\Controllers\KelasParalelController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\GuruController;
+use App\Http\Controllers\MataPelajaranController;
+use App\Http\Controllers\AbsensiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,7 +28,7 @@ use App\Http\Controllers\LocationController;
 
 Route::get('/', [LoginController::class,'login'])->name('login');
 Route::get('/daftar', [LoginController::class,'Register'])->name('daftar');
-Route::post('/action-login', [LoginController::class, 'action_login'])->name('action-login');
+Route::post('/action-login', [LoginController::class, 'action_login'])->name('action-login')->middleware('web');;
 Route::post('/action-daftar', [LoginController::class, 'actionRegister'])->name('action-daftar');
 Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard')->middleware('auth');
 Route::get('/dashboardadmin', [DashboardController::class, 'dashboardAdmin'])->name('dashboardadmin')->middleware('auth');
@@ -83,6 +86,7 @@ Route::get('/tahunajaran/form/{id}', [TahunAjaranController::class,'Form'])->nam
 Route::post('/tahunajaran/store', [TahunAjaranController::class, 'store'])->name('tahunajaran-store')->middleware('auth');
 Route::post('/tahunajaran/edit', [TahunAjaranController::class, 'edit'])->name('tahunajaran-edit')->middleware('auth');
 Route::delete('/tahunajaran/delete/{id}', [TahunAjaranController::class, 'destroy'])->name('tahunajaran-delete')->middleware('auth');
+Route::get('get-tahunajaran/{id}', [TahunAjaranController::class, 'getTahunAjaran']);
 
 
 /*
@@ -97,6 +101,7 @@ Route::get('/kelas/form/{id}', [KelasController::class,'Form'])->name('kelas-for
 Route::post('/kelas/store', [KelasController::class, 'store'])->name('kelas-store')->middleware('auth');
 Route::post('/kelas/edit', [KelasController::class, 'edit'])->name('kelas-edit')->middleware('auth');
 Route::delete('/kelas/delete/{id}', [KelasController::class, 'destroy'])->name('kelas-delete')->middleware('auth');
+Route::get('get-kelas/{id}', [KelasController::class, 'getKelas']);
 
 /*
 |--------------------------------------------------------------------------
@@ -137,7 +142,50 @@ Route::get('/siswa/form/{id}', [SiswaController::class,'Form'])->name('siswa-for
 Route::post('/siswa/store', [SiswaController::class, 'store'])->name('siswa-store')->middleware('auth');
 Route::post('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa-edit')->middleware('auth');
 Route::delete('/siswa/delete/{id}', [SiswaController::class, 'destroy'])->name('siswa-delete')->middleware('auth');
+Route::post('/update-kelas-siswa', [SiswaController::class, 'updateKelas'])->name('update-kelas-siswa');
 
+/*
+|--------------------------------------------------------------------------
+| Guru
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get('/guru', [GuruController::class,'index'])->name('guru')->middleware('auth');
+Route::get('/guru/form/{id}', [GuruController::class,'Form'])->name('guru-form')->middleware('auth');
+Route::post('/guru/store', [GuruController::class, 'store'])->name('guru-store')->middleware('auth');
+Route::post('/guru/edit', [GuruController::class, 'edit'])->name('guru-edit')->middleware('auth');
+Route::delete('/guru/delete/{id}', [GuruController::class, 'destroy'])->name('guru-delete')->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
+| Mapel
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get('/mapel', [MataPelajaranController::class,'index'])->name('mapel')->middleware('auth');
+Route::get('/mapel/form/{id}', [MataPelajaranController::class,'Form'])->name('mapel-form')->middleware('auth');
+Route::post('/mapel/store', [MataPelajaranController::class, 'store'])->name('mapel-store')->middleware('auth');
+Route::post('/mapel/edit', [MataPelajaranController::class, 'edit'])->name('mapel-edit')->middleware('auth');
+Route::delete('/mapel/delete/{id}', [MataPelajaranController::class, 'destroy'])->name('mapel-delete')->middleware('auth');
+Route::get('get-mapel/{id}', [MataPelajaranController::class, 'getMapel']);
+
+/*
+|--------------------------------------------------------------------------
+| Absensi
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get('/absensi', [AbsensiController::class,'index'])->name('absensi')->middleware('auth');
+// Route::get('/guru/form/{id}', [GuruController::class,'Form'])->name('guru-form')->middleware('auth');
+// Route::post('/guru/store', [GuruController::class, 'store'])->name('guru-store')->middleware('auth');
+// Route::post('/guru/edit', [GuruController::class, 'edit'])->name('guru-edit')->middleware('auth');
+// Route::delete('/guru/delete/{id}', [GuruController::class, 'destroy'])->name('guru-delete')->middleware('auth');
+
+
+Route::get('get-provinsi/{provID}', [LocationController::class, 'getProvinsi']);
 Route::get('get-kota/{provID}', [LocationController::class, 'getKota']);
 Route::get('get-kecamatan/{kotaID}', [LocationController::class, 'getKecamatan']);
 Route::get('get-kelurahan/{kecID}', [LocationController::class, 'getKelurahan']);

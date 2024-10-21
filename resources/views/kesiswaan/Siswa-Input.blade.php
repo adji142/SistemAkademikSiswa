@@ -45,7 +45,7 @@
                     <div class="col-12 px-4">
                         <div class="card card-custom gutter-b bg-white border-0">
                             <div class="card-body">
-                                <form action="{{ count($siswa) > 0 ? route('siswa-edit') : route('siswa-store') }}" method="post" enctype="multipart/form-data">
+                                <form action="{{ count($siswa) > 0 ? route('siswa-edit') : route('siswa-store') }}" method="post" enctype="multipart/form-data" onsubmit="return konfirmasiSubmit()">
                                     @csrf
 
                                     <div class="form-group row">
@@ -55,21 +55,17 @@
                                                 <label class="text-body">Foto</label>
                                                 <small>Click or Drop Images in the Box for Upload.</small>
                                                 <fieldset class="form-group mb-3">
-                                                    <!-- <input type="file" class="form-control" id="Foto" name="Foto" accept="image/*" > -->
-                                                    <div class="avatar-upload mb-3">
-                                                        <div class="avatar-edit">
-                                                            <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" />
-                                                            <label for="imageUpload">
-                                                                image upload
-                                                            </label>
-                                                        </div>
-                                                        <div class="avatar-preview">
-                                                            <div id="imagePreview" class="rounded" style="background-image: url(./assets/images/carousel/slide3.jpg);">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <img id="imagePreview" src="{{ count($siswa) > 0 ? asset('storage/' . $siswa[0]['Foto']) : '' }}" class="mt-3" style="max-width: 200px; display: {{ count($siswa) > 0 ? 'block' : 'none' }};">
-                                                </fieldset>
+    <div class="avatar-upload mb-3">
+        <div class="avatar-edit">
+            <input type="file" id="imageUpload" name="Foto" accept=".png, .jpg, .jpeg" onchange="loadFile(event)" />
+            <label for="imageUpload">image upload</label>
+        </div>
+        <div class="avatar-preview">
+            <div id="imagePreview" class="rounded" style="background-image: url({{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : './assets/images/carousel/slide3.jpg' }});"></div>
+        </div>
+    </div>
+    <!-- <img id="imagePreviewImg" src="{{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : '' }}" class="mt-3" style="max-width: 200px; display: {{ count($siswa) > 0 ? 'block' : 'none' }};"> -->
+</fieldset>
                                             </div>
                                         </center>
 
@@ -134,7 +130,7 @@
                                         
                                         <!-- Email -->
                                         <div class="col-md-6">
-                                            <label class="text-body">Tempat Lahir</label>
+                                            <label class="text-body">Email</label>
                                             <fieldset class="form-group mb-3">
                                                 <input type="mail" class="form-control" id="Email" name="Email" placeholder="test@gmail.com" value="{{ count($siswa) > 0 ? $siswa[0]['Email'] : '' }}" required>
                                             </fieldset>
@@ -151,16 +147,20 @@
                                         <!-- Replace these with select elements using select2.js similar to JenisKelamin -->
                                         <!-- Provinsi -->
                                         <div class="col-md-3">
-                                            <label class="text-body">Provinsi</label>
+                                        <label class="text-body">Provinsi</label>
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="ProvID" name="ProvID">
-                                                    <option value="">Select Provinsi</option>
-                                                    @foreach ($provinsi as $prov)
-                                                        <option value="{{ $prov->prov_id }}">{{ $prov->prov_name }}</option>
-                                                    @endforeach
+                                                @foreach ($provinsi as $prov)
+                <option value="{{ $prov->prov_id }}" {{ (isset($siswa[0]) && $siswa[0]['ProvID'] == $prov->prov_id) ? 'selected' : '' }}>
+                    {{ $prov->prov_name }}
+                </option>
+            @endforeach
                                                 </select>
                                             </fieldset>
-                                        </div>
+                                            </div>
+
+
+
 
                                         <!-- Kota -->
                                         <div class="col-md-3">
@@ -206,8 +206,10 @@
                                                 <select class="form-control select2" id="tahunajaran" name="tahunajaran">
                                                     <option value="">Select Tahun Ajaran</option>
                                                     @foreach ($tahunajaran as $th)
-                                                        <option value="{{ $th->id }}">{{ $th->NamaTahunAjaran }}</option>
-                                                    @endforeach
+                <option value="{{ $th->id }}" {{ (isset($siswa[0]) && $siswa[0]['tahunajaran'] == $th->id) ? 'selected' : '' }}>
+                    {{ $th->NamaTahunAjaran }}
+                </option>
+            @endforeach
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -217,9 +219,11 @@
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="KelasID" name="KelasID">
                                                     <option value="">Select Kelas</option>
-                                                    @foreach ($kelas as $th)
-                                                        <option value="{{ $th->id }}">{{ $th->NamaKelas }}</option>
-                                                    @endforeach
+                                                      @foreach ($kelas as $th)
+                <option value="{{ $th->id }}" {{ (isset($siswa[0]) && $siswa[0]['KelasID'] == $th->id) ? 'selected' : '' }}>
+                    {{ $th->NamaKelas }}
+                </option>
+            @endforeach
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -229,6 +233,11 @@
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="KelasParalelID" name="KelasParalelID">
                                                     <option value="">Select Kelas Paralel</option>
+                                                    @foreach ($kelasParalel as $th)
+                <option value="{{ $th->id }}" {{ (isset($siswa[0]) && $siswa[0]['KelasParalelID'] == $th->id) ? 'selected' : '' }}>
+                    {{ $th->NamaKelasParalel }}
+                </option>
+            @endforeach
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -241,7 +250,7 @@
                                         <div class="col-md-12">
                                             <label class="text-body">Nama Wali</label>
                                             <fieldset class="form-group mb-3">
-                                                <input type="text" class="form-control" id="NamaWali" name="NamaWali" placeholder="Nama Wali" required>
+                                                <input type="text" class="form-control" id="NamaWali" name="NamaWali" placeholder="Nama Wali" value="{{ count($siswa) > 0 ? $siswa[0]['NamaWali'] : '' }}" required>
                                             </fieldset>
                                         </div>
                                         
@@ -250,9 +259,12 @@
                                             <label class="text-body">Hubungan Wali</label>
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="HubunganWali" name="HubunganWali" required>
-                                                    <option value="Orang Tua">Orang Tua</option>
+                                                    <!-- <option value="Orang Tua">Orang Tua</option>
                                                     <option value="Saudara">Saudara</option>
-                                                    <option value="Lain Lain">Lain Lain</option>
+                                                    <option value="Lain Lain">Lain Lain</option> -->
+                    <option value="Orang Tua" {{  (isset($siswa[0]) && $siswa[0]['HubunganWali'] === 'Orang Tua' )  ? 'selected' : '' }}>Orang Tua</option>
+                    <option value="Saudara" {{ (isset($siswa[0]) && $siswa[0]['HubunganWali'] === 'Saudara' )  ? 'selected' : '' }}>Saudara</option>
+                    <option value="Lain Lain" {{ (isset($siswa[0]) && $siswa[0]['HubunganWali'] === 'Lain Lain' ) }}>Lain Lain</option>
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -260,7 +272,7 @@
                                         <div class="col-md-6">
                                             <label class="text-body">Nomor Ponsel Wali</label>
                                             <fieldset class="form-group mb-3">
-                                            <input type="number" class="form-control" id="NoTlpWali" name="NoTlpWali" placeholder="6281325058258" required>
+                                            <input type="number" class="form-control" id="NoTlpWali" name="NoTlpWali" placeholder="6281325058258" value="{{ count($siswa) > 0 ? $siswa[0]['NoTlpWali'] : '' }}" required>
                                             </fieldset>
                                         </div>
 
@@ -270,9 +282,11 @@
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="WaliProvID" name="WaliProvID" required>
                                                     <option value="">Pilih Provinsi</option>
-                                                    @foreach($provinsi as $prov)
-                                                        <option value="{{ $prov->prov_id }}">{{ $prov->prov_name }}</option>
-                                                    @endforeach
+                                                    @foreach ($provinsi as $prov)
+                <option value="{{ $prov->prov_id }}" {{ (isset($siswa[0]) && $siswa[0]['WaliProvID'] == $prov->prov_id) ? 'selected' : '' }}>
+                    {{ $prov->prov_name }}
+                </option>
+            @endforeach
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -311,7 +325,7 @@
                                         <div class="col-md-12">
                                             <label class="text-body">Alamat Wali</label>
                                             <fieldset class="form-group mb-3">
-                                            <input type="text" class="form-control" id="AlamatWali" name="AlamatWali" placeholder="Alamat Wali" required>
+                                            <input type="text" class="form-control" id="AlamatWali" name="AlamatWali" placeholder="Alamat Wali" value="{{ count($siswa) > 0 ? $siswa[0]['AlamatWali'] : '' }}" required>
                                             </fieldset>
                                         </div>
 
@@ -319,7 +333,8 @@
                                         <div class="col-md-6">
                                             <label class="text-body">Status</label>
                                             <fieldset class="form-group mb-3">
-                                                <input type="checkbox" id="Status" name="Status" value="1" {{ count($siswa) > 0 && $siswa[0]['Status'] == '1' ? 'checked' : '' }}>
+                                            <input type="hidden" name="Status" value="0">
+                                            <input type="checkbox" id="Status" name="Status" value="1" {{ count($siswa) > 0 && $siswa[0]['Status'] == '1' ? 'checked' : '' }}>
                                             </fieldset>
                                         </div>
 
@@ -358,6 +373,36 @@ jQuery(function () {
             output.style.display = 'block';
         }
     });
+
+    //Read edit Condition For Lokasi
+//------------------------------------------------------------------------------------------------------------------------
+
+    jQuery(document).ready(function() {
+    // Ambil data dari database untuk kondisi edit
+    var selectedProvID = "{{ isset($siswa[0]) ? $siswa[0]['ProvID'] : '' }}";
+    var selectedKotaID = "{{ isset($siswa[0]) ? $siswa[0]['KotaID'] : '' }}";
+    var selectedKecID = "{{ isset($siswa[0]) ? $siswa[0]['KecID'] : '' }}";
+    var selectedKelID = "{{ isset($siswa[0]) ? $siswa[0]['KelID'] : '' }}";
+
+    
+           // Jika ada Provinsi yang dipilih, ambil daftar Kota
+    if (selectedProvID) {
+        jQuery.ajax({
+            url: '{{ url("get-kota") }}/' + selectedProvID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#KotaID').empty().append('<option value="">Select Kota</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.city_id == selectedKotaID) ? 'selected' : '';
+                    jQuery('#KotaID').append('<option value="'+ value.city_id +'" '+ selected +'>'+ value.city_name +'</option>');
+                });
+            }
+        });
+      
+    }
+   
+    // Mengambil kota berdasarkan provinsi yang dipilih saat ini
     jQuery('#ProvID').change(function() {
         var provID = jQuery(this).val();
         if (provID) {
@@ -374,6 +419,79 @@ jQuery(function () {
             });
         }
     });
+
+    if (selectedKotaID) {
+        jQuery.ajax({
+            url: '{{ url("get-kecamatan") }}/' + selectedKotaID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#KecID').empty().append('<option value="">Select Kecamatan</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.dis_id == selectedKecID) ? 'selected' : '';
+                    jQuery('#KecID').append('<option value="'+ value.dis_id +'" '+ selected +'>'+ value.dis_name +'</option>');
+                });
+            }
+        });
+
+       
+    }
+
+    // jQuery('#KotaID').change(function() {
+    //     var kotaID = jQuery(this).val();
+    //     if (kotaID) {
+    //         jQuery.ajax({
+    //             url: '{{ url("get-kota") }}/' + kotaID,
+    //             type: 'GET',
+    //             dataType: 'json',
+    //             success: function(data) {
+    //                 jQuery('#KecID').empty().append('<option value="">Select Kecamatan</option>');
+    //                 jQuery.each(data, function(key, value) {
+    //                     jQuery('#KecID').append('<option value="'+ value.dis_id +'">'+ value.dis_name +'</option>');
+    //                 });
+    //             }
+    //         });
+    //     }
+    // });
+
+    if (selectedKecID) {
+        jQuery.ajax({
+            url: '{{ url("get-kelurahan") }}/' + selectedKecID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#KelID').empty().append('<option value="">Select Kelurahan</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.subdis_id == selectedKelID) ? 'selected' : '';
+                    jQuery('#KelID').append('<option value="'+ value.subdis_id +'" '+ selected +'>'+ value.subdis_name +'</option>');
+                });
+            }
+        });
+
+       
+    }
+
+    jQuery('#KecID').change(function() {
+        var kecID = jQuery(this).val();
+        if (kecID) {
+            jQuery.ajax({
+                url: '{{ url("get-kelurahan") }}/' + kecID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#KelID').empty().append('<option value="">Select Kelurahan</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#KelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
+                    });
+                }
+            });
+        }
+    });
+
+
+});
+
+//------------------------------------------------------------------------------------------------------------------------
 
     // Load Kecamatan based on Kota selection
     jQuery('#KotaID').change(function() {
@@ -393,42 +511,166 @@ jQuery(function () {
         }
     });
 
-    // Load Kelurahan based on Kecamatan selection
-    jQuery('#KecID').change(function() {
-        var kecID = jQuery(this).val();
-        if (kecID) {
+    // // Load Kelurahan based on Kecamatan selection
+    // jQuery('#KecID').change(function() {
+    //     var kecID = jQuery(this).val();
+    //     if (kecID) {
+    //         jQuery.ajax({
+    //             url: '{{ url("get-kelurahan") }}/' + kecID,
+    //             type: 'GET',
+    //             dataType: 'json',
+    //             success: function(data) {
+    //                 jQuery('#KelID').empty().append('<option value="">Select Kelurahan</option>');
+    //                 jQuery.each(data, function(key, value) {
+    //                     jQuery('#KelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
+    //                 });
+    //             }
+    //         });
+    //     }
+    // });
+
+    // Filter Kota based on Provinsi
+    // jQuery('#WaliProvID').on('change', function() {
+    //     let prov_id = $(this).val();
+    //     $.ajax({
+    //         url: '{{ url("get-kota") }}/' + prov_id,
+    //         method: 'GET',
+    //         data: { prov_id: prov_id },
+    //         success: function(data) {
+    //             jQuery('#WaliKotaID').empty().append('<option value="">Pilih Kota</option>');
+    //             jQuery.each(data, function(key, value) {
+    //                 jQuery('#WaliKotaID').append('<option value="'+ value.city_id +'">'+ value.city_name +'</option>');
+    //             });
+    //         }
+    //     });
+    // });
+
+   
+
+     //Read edit Condition For Lokasi Wali
+//------------------------------------------------------------------------------------------------------------------------
+
+jQuery(document).ready(function() {
+    // Ambil data dari database untuk kondisi edit
+    var selectedWaliProvID = "{{ isset($siswa[0]) ? $siswa[0]['WaliProvID'] : '' }}";
+    var selectedWaliKotaID = "{{ isset($siswa[0]) ? $siswa[0]['WaliKotaID'] : '' }}";
+    var selectedWaliKecID = "{{ isset($siswa[0]) ? $siswa[0]['WaliKecID'] : '' }}";
+    var selectedWaliKelID = "{{ isset($siswa[0]) ? $siswa[0]['WaliKelID'] : '' }}";
+
+
+   
+
+        // Jika ada Provinsi yang dipilih, ambil daftar Kota
+    if (selectedWaliProvID) {
+        jQuery.ajax({
+            url: '{{ url("get-kota") }}/' + selectedWaliProvID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#WaliKotaID').empty().append('<option value="">Select Kota</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.city_id == selectedWaliKotaID) ? 'selected' : '';
+                    jQuery('#WaliKotaID').append('<option value="'+ value.city_id +'" '+ selected +'>'+ value.city_name +'</option>');
+                });
+            }
+        });
+
+       
+    }
+   
+    // Mengambil kota berdasarkan provinsi yang dipilih saat ini
+    jQuery('#WaliProvID').change(function() {
+        var waliProvID = jQuery(this).val();
+        if (waliProvID) {
             jQuery.ajax({
-                url: '{{ url("get-kelurahan") }}/' + kecID,
+                url: '{{ url("get-kota") }}/' + waliProvID,
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
-                    jQuery('#KelID').empty().append('<option value="">Select Kelurahan</option>');
+                    jQuery('#WaliKotaID').empty().append('<option value="">Select Kota</option>');
                     jQuery.each(data, function(key, value) {
-                        jQuery('#KelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
+                        jQuery('#WaliKotaID').append('<option value="'+ value.city_id +'">'+ value.city_name +'</option>');
                     });
                 }
             });
         }
     });
 
-    // Filter Kota based on Provinsi
-    jQuery('#WaliProvID').on('change', function() {
-        let prov_id = $(this).val();
-        $.ajax({
-            url: '{{ url("get-kota") }}/' + prov_id,
-            method: 'GET',
-            data: { prov_id: prov_id },
+    if (selectedWaliKotaID) {
+        jQuery.ajax({
+            url: '{{ url("get-kecamatan") }}/' + selectedWaliKotaID,
+            type: 'GET',
+            dataType: 'json',
             success: function(data) {
-                jQuery('#WaliKotaID').empty().append('<option value="">Pilih Kota</option>');
+                jQuery('#WaliKecID').empty().append('<option value="">Select Kecamatan</option>');
                 jQuery.each(data, function(key, value) {
-                    jQuery('#WaliKotaID').append('<option value="'+ value.city_id +'">'+ value.city_name +'</option>');
+                    var selected = (value.dis_id == selectedWaliKecID) ? 'selected' : '';
+                    jQuery('#WaliKecID').append('<option value="'+ value.dis_id +'" '+ selected +'>'+ value.dis_name +'</option>');
                 });
             }
         });
+
+       
+    }
+
+    jQuery('#WaliKotaID').change(function() {
+        var waliKotaID = jQuery(this).val();
+        if (waliKotaID) {
+            jQuery.ajax({
+                url: '{{ url("get-kecamatan") }}/' + waliKotaID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#WaliKecID').empty().append('<option value="">Select Kecamatan</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#WaliKecID').append('<option value="'+ value.dis_id +'">'+ value.dis_name +'</option>');
+                    });
+                }
+            });
+        }
     });
 
-    // Filter Kecamatan based on Kota
-    jQuery('#WaliKotaID').on('change', function() {
+    if (selectedWaliKecID) {
+        jQuery.ajax({
+            url: '{{ url("get-kelurahan") }}/' + selectedWaliKecID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#WaliKelID').empty().append('<option value="">Select Kelurahan</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.subdis_id == selectedWaliKelID) ? 'selected' : '';
+                    jQuery('#WaliKelID').append('<option value="'+ value.subdis_id +'" '+ selected +'>'+ value.subdis_name +'</option>');
+                });
+            }
+        });
+
+       
+    }
+
+    jQuery('#WaliKecID').change(function() {
+        var waliKecID = jQuery(this).val();
+        if (waliKecID) {
+            jQuery.ajax({
+                url: '{{ url("get-kelurahan") }}/' + waliKecID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#WaliKelID').empty().append('<option value="">Select Kelurahan</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#WaliKelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
+                    });
+                }
+            });
+        }
+    });
+
+
+});
+
+//------------------------------------------------------------------------------------------------------------------------
+
+ // Filter Kecamatan based on Kota
+ jQuery('#WaliKotaID').on('change', function() {
         let kota_id = $(this).val();
         $.ajax({
             url: '{{ url("get-kecamatan") }}/' + kota_id,
@@ -443,41 +685,81 @@ jQuery(function () {
         });
     });
 
-    // Filter Kelurahan based on Kecamatan
-    jQuery('#WaliKecID').on('change', function() {
-        let kec_id = $(this).val();
-        $.ajax({
-            url: '{{ url("get-kelurahan") }}/' + kec_id,
-            method: 'GET',
-            data: { kec_id: kec_id },
-            success: function(data) {
-                jQuery('#WaliKelID').empty().append('<option value="">Pilih Kelurahan</option>');
-                jQuery.each(data, function(key, value) {
-                    jQuery('#WaliKelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
-                });
-            }
-        });
-    });
+    // // Filter Kelurahan based on Kecamatan
+    // jQuery('#WaliKecID').on('change', function() {
+    //     let kec_id = $(this).val();
+    //     $.ajax({
+    //         url: '{{ url("get-kelurahan") }}/' + kec_id,
+    //         method: 'GET',
+    //         data: { kec_id: kec_id },
+    //         success: function(data) {
+    //             jQuery('#WaliKelID').empty().append('<option value="">Pilih Kelurahan</option>');
+    //             jQuery.each(data, function(key, value) {
+    //                 jQuery('#WaliKelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
+    //             });
+    //         }
+    //     });
+    // });
 
-    jQuery('#KelasID').change(function() {
-        console.log(oKelasParalel);
-        const filterParalel = oKelasParalel.filter(kel => kel.kelas_id == jQuery('#KelasID').val());
 
-        $('#KelasParalelID').empty();
-        var newOption = $('<option>', {
-            value: -1,
-            text: "Pilih Kelas Paralel"
-        });
-        $('#KelasParalelID').append(newOption); 
-        $.each(filterParalel,function (k,v) {
-            var newOption = $('<option>', {
-                value: v.id,
-                text: v.NamaKelasParalel
-            });
 
-            $('#KelasParalelID').append(newOption);
-        });
-    });
+    // jQuery('#KelasID').change(function() {
+    //     console.log(oKelasParalel);
+    //     const filterParalel = oKelasParalel.filter(kel => kel.kelas_id == jQuery('#KelasID').val());
+
+    //     $('#KelasParalelID').empty();
+    //     var newOption = $('<option>', {
+    //         value: -1,
+    //         text: "Pilih Kelas Paralel"
+    //     });
+    //     $('#KelasParalelID').append(newOption); 
+    //     $.each(filterParalel,function (k,v) {
+    //         var newOption = $('<option>', {
+    //             value: v.id,
+    //             text: v.NamaKelasParalel
+    //         });
+
+    //         $('#KelasParalelID').append(newOption);
+    //     });
+    // });
 });
+
+var loadFile = function(event) {
+    var output = document.getElementById('imagePreview');
+    var previewImg = document.getElementById('imagePreviewImg');
+    
+    if (event.target.files && event.target.files[0]) {
+        // Preview di div background image
+        output.style.backgroundImage = "url(" + URL.createObjectURL(event.target.files[0]) + ")";
+        
+        // Jika menggunakan img tag, atur source-nya
+        previewImg.src = URL.createObjectURL(event.target.files[0]);
+        previewImg.style.display = "block";
+        
+        // Revoke object URL setelah digunakan
+        previewImg.onload = function() {
+            URL.revokeObjectURL(previewImg.src); // Free up memory
+        }
+    } else {
+        // Jika tidak ada file yang dipilih, reset preview
+        output.style.backgroundImage = "";
+        previewImg.style.display = "none";
+    }
+};
+
+
 </script>
+
+<script>
+                    function konfirmasiSubmit(){
+                        var r = confirm('Lanjutkan penyimpanan data ?');
+
+                        if(r){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }
+                </script>
+
 @endpush
