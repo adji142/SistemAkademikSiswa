@@ -68,7 +68,6 @@ class GuruController extends Controller
             $guru->NamaGuru = $request->input('NamaGuru');
             $guru->Email = $request->input('Email');
             $guru->NoHP = $request->input('NoHP');
-            $guru->KelasID = $request->input('KelasID');
             $guru->MapelID = $request->input('MapelID');
 
             $guru->save();

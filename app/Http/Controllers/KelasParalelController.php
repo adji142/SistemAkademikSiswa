@@ -34,6 +34,16 @@ class KelasParalelController extends Controller
     ]);
     }
 
+    public function getKelasParalel($kelasID)
+    {
+        try {
+            $kota = KelasParalel::where('kelas_id', $kelasID)->get();
+            return response()->json($kota);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
+    }
+
     // Form for single record (Create or Update)
     public function Form($id = null)
     {

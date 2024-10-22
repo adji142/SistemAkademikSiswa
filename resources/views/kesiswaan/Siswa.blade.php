@@ -61,11 +61,11 @@
 
                                         <select id="filterKelasParalel" class="form-control w-auto">
                                             <option value=""><- Filter Kelas Paralel -></option>
-                                            @foreach ($kelasParalel as $th)
+                                            <!-- @foreach ($kelasParalel as $th)
                                                 <option value="{{ $th->id }}">
                                                     {{ $th->NamaKelasParalel }}
                                                 </option>
-                                            @endforeach
+                                            @endforeach -->
                                         </select>
                                     </div>
                                 </div>
@@ -156,6 +156,22 @@
         });
 
         $('#filterKelas').on('change', function() {
+
+            var kelasID = jQuery(this).val();
+        if (kelasID) {
+            jQuery.ajax({
+                url: '{{ url("get-kelas-paralel") }}/' + kelasID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#filterKelasParalel').empty().append('<option value="">Select Kelas Paralel</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#filterKelasParalel').append('<option value="'+ value.id +'">'+ value.NamaKelasParalel +'</option>');
+                    });
+                }
+            });
+        }
+
             var selectedValue = $(this).val(); 
         var selectedText = $('#filterKelas option:selected').text().trim();  // Mendapatkan teks dari option yang dipilih
         console.log("5. Selected Kelas: " + selectedText);
@@ -207,7 +223,6 @@
         });
 
       
-
 
      
 

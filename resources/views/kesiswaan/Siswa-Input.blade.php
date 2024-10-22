@@ -233,11 +233,11 @@
                                             <fieldset class="form-group mb-3">
                                                 <select class="form-control select2" id="KelasParalelID" name="KelasParalelID">
                                                     <option value="">Select Kelas Paralel</option>
-                                                    @foreach ($kelasParalel as $th)
+                                                    <!-- @foreach ($kelasParalel as $th)
                 <option value="{{ $th->id }}" {{ (isset($siswa[0]) && $siswa[0]['KelasParalelID'] == $th->id) ? 'selected' : '' }}>
                     {{ $th->NamaKelasParalel }}
                 </option>
-            @endforeach
+            @endforeach -->
                                                 </select>
                                             </fieldset>
                                         </div>
@@ -685,43 +685,55 @@ jQuery(document).ready(function() {
         });
     });
 
-    // // Filter Kelurahan based on Kecamatan
-    // jQuery('#WaliKecID').on('change', function() {
-    //     let kec_id = $(this).val();
-    //     $.ajax({
-    //         url: '{{ url("get-kelurahan") }}/' + kec_id,
-    //         method: 'GET',
-    //         data: { kec_id: kec_id },
-    //         success: function(data) {
-    //             jQuery('#WaliKelID').empty().append('<option value="">Pilih Kelurahan</option>');
-    //             jQuery.each(data, function(key, value) {
-    //                 jQuery('#WaliKelID').append('<option value="'+ value.subdis_id +'">'+ value.subdis_name +'</option>');
-    //             });
-    //         }
-    //     });
-    // });
+     //Read edit Condition For kelas - kelas Paralel
+//------------------------------------------------------------------------------------------------------------------------
 
+jQuery(document).ready(function() {
+    // Ambil data dari database untuk kondisi edit
+    var selectedKelasID = "{{ isset($siswa[0]) ? $siswa[0]['KelasID'] : '' }}";
+    var selectedKelasParalelID = "{{ isset($siswa[0]) ? $siswa[0]['KelasParalelID'] : '' }}";
+   
 
+        
+    if (selectedKelasID) {
+        jQuery.ajax({
+            url: '{{ url("get-kelas-paralel") }}/' + selectedKelasID,
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                jQuery('#KelasParalelID').empty().append('<option value="">Select Kelas Paralel</option>');
+                jQuery.each(data, function(key, value) {
+                    var selected = (value.id == selectedKelasParalelID) ? 'selected' : '';
+                    jQuery('#KelasParalelID').append('<option value="'+ value.id +'" '+ selected +'>'+ value.NamaKelasParalel +'</option>');
+                });
+            }
+        });
 
-    // jQuery('#KelasID').change(function() {
-    //     console.log(oKelasParalel);
-    //     const filterParalel = oKelasParalel.filter(kel => kel.kelas_id == jQuery('#KelasID').val());
+       
+    }
+   
+   
+    jQuery('#KelasID').change(function() {
+        var kelasID = jQuery(this).val();
+        if (kelasID) {
+            jQuery.ajax({
+                url: '{{ url("get-kelas-paralel") }}/' + kelasID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#KelasParalelID').empty().append('<option value="">Select Kelas Paralel</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#KelasParalelID').append('<option value="'+ value.id +'">'+ value.NamaKelasParalel +'</option>');
+                    });
+                }
+            });
+        }
+    });
 
-    //     $('#KelasParalelID').empty();
-    //     var newOption = $('<option>', {
-    //         value: -1,
-    //         text: "Pilih Kelas Paralel"
-    //     });
-    //     $('#KelasParalelID').append(newOption); 
-    //     $.each(filterParalel,function (k,v) {
-    //         var newOption = $('<option>', {
-    //             value: v.id,
-    //             text: v.NamaKelasParalel
-    //         });
+});
 
-    //         $('#KelasParalelID').append(newOption);
-    //     });
-    // });
+//------------------------------------------------------------------------------------------------------------------------
+   
 });
 
 var loadFile = function(event) {

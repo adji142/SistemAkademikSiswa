@@ -115,6 +115,7 @@ Route::get('/kelas-paralel/form/{id}', [KelasParalelController::class,'Form'])->
 Route::post('/kelas-paralel/store', [KelasParalelController::class, 'store'])->name('kelas-paralel-store')->middleware('auth');
 Route::post('/kelas-paralel/edit', [KelasParalelController::class, 'edit'])->name('kelas-paralel-edit')->middleware('auth');
 Route::delete('/kelas-paralel/delete/{id}', [KelasParalelController::class, 'destroy'])->name('kelas-paralel-delete')->middleware('auth');
+Route::get('get-kelas-paralel/{kelasID}', [KelasParalelController::class, 'getKelasParalel']);
 
 
 /*
