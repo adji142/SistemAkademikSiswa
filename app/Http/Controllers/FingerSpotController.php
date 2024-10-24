@@ -14,6 +14,8 @@ use Log;
 use App\Models\MesinAbsensi;
 use App\Models\Siswa;
 use App\Models\AppSetting;
+use App\Models\AttLog;
+
 class FingerSpotController extends Controller
 {
     function CreateUser(Request $request){
@@ -76,6 +78,77 @@ jump:
             $data["message"] = $th->getMessage();
         }
 
+        return response()->json($data);
+    }
+
+    function GetAttandance(Request $request) {
+        $data = array('success' => false, 'message'=>'', 'data'=>array());
+        $currentDate = now()->toDateString();
+        $previousDate = now()->subDay()->toDateString();
+
+        // dd($previousDate);
+        try {
+            $oMesin = MesinAbsensi::all();
+            $oSetting = new AppSetting();
+
+            foreach ($oMesin as $key) {
+                $oPref = AttLog::where('sn',$key->CloudKey)
+                            ->whereBetween(DB::raw("CAST(scan_date as date)"), [$previousDate, $currentDate])
+                            ->count();
+                if ($oPref > 0) {
+                    DB::table('att_log')
+                        ->where('sn','=', $key->CloudKey)
+                        ->whereBetween(DB::raw("CAST(scan_date as date)"), [$previousDate, $currentDate])
+                        ->delete();
+                }
+
+                // dd($oPref);
+                // {"trans_id":"1", "cloud_id":"xxxx", "start_date":"2020-07-25", "end_date":"2020-07-26"}
+                $oParam = [
+                    'trans_id' => "ATT".$key->CloudKey,
+                    'cloud_id' => $key->CloudKey,
+                    'start_date' => $previousDate,
+                    'end_date' => $currentDate
+                ];
+
+                $url = $oSetting->BaseURL()."get_attlog";
+                $response = Http::withToken($key->APIToken)->post($url, $oParam);
+                // var_dump($response->json());
+                if ($response->successful()) {
+                    $oResponseData = $response->json();
+
+                    if ($oResponseData["success"] == false) {
+                        $data['success'] = false;
+                        $data['data'] = $oResponseData["message"] ;
+                    }
+                    $data['success'] = true;
+                    $data['data'] = $oResponseData;
+
+                    // dd($oResponseData);
+                    foreach ($oResponseData["data"] as $keyAbsen) {
+                        // dd($key['pin']);
+                        $absensi = new AttLog();
+                        $absensi->sn = $key->CloudKey;
+                        $absensi->scan_date = $keyAbsen["scan_date"];
+                        $absensi->pin = $keyAbsen["pin"];
+                        $absensi->verifymode = $keyAbsen["verify"];
+                        $absensi->inoutmode = $keyAbsen["status_scan"];
+                        $absensi->reserved = 0;
+                        $absensi->work_code = 0;
+                        $absensi->att_id = "";
+                        $absensi->save();
+                    }
+                }
+                else{
+                    $data["success"] = false;
+                    $data["message"] = "Gagal Membuat User Mesin Absensi";
+                }
+            }
+        jump:
+        } catch (\Throwable $th) {
+            $data["success"] = false;
+            $data["message"] = $th->getMessage();
+        }
         return response()->json($data);
     }
 }

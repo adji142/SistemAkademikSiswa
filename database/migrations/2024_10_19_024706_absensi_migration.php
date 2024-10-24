@@ -13,7 +13,7 @@ class AbsensiMigration extends Migration
      */
     public function up()
     {
-        Schema::create('absensi', function (Blueprint $table) {
+        Schema::create('att_log', function (Blueprint $table) {
             $table->id();
             $table->string('sn');
             $table->datetime('scan_date');
@@ -34,6 +34,6 @@ class AbsensiMigration extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('absensi');
+        Schema::dropIfExists('att_log');
     }
 }
