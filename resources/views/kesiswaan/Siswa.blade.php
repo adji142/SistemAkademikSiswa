@@ -89,6 +89,7 @@
                                                 <th>Jenis Kelamin</th>
                                                 <th>Email</th>
                                                 <th>No Tlp</th>
+                                                <th>Uploaded</th>
                                                 <th class="no-sort text-end">Action</th>
                                             </tr>
                                         </thead>
@@ -110,6 +111,7 @@
                                                 <td>{{ $data->JenisKelamin == 'L' ? 'Laki-Laki' : 'Perempuan' }}</td>
                                                 <td>{{ $data->Email }}</td>
                                                 <td>{{ $data->NoHP }}</td>
+                                                <td>{{ $data->isUploaded }}</td>
                                                     <td>
                                                         <div class="card-toolbar text-end">
                                                             <button class="btn p-0 shadow-none" type="button" id="dropdowneditButton{{ $data->NISN }}" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -152,7 +154,16 @@
             "columnDefs": [{
                 "targets": 'no-sort',
                 "orderable": false,
-            }]
+            }],
+            "createdRow": function(row, data, dataIndex) {
+                // Disable the checkbox if the NISN is empty or another condition is met
+                console.log(data[12]);
+                if (data[12] == 1) {
+                    jQuery(row).find('.siswaCheckbox').prop('disabled', true);
+                }
+                // You can add other conditions here if necessary
+                // Example: if (data.status === 'inactive') { ... }
+            }
         });
 
         $('#filterKelas').on('change', function() {
@@ -203,7 +214,8 @@
 
         // Check/uncheck all checkboxes
         jQuery('#checkAll').on('change', function() {
-            jQuery('.siswaCheckbox').prop('checked', this.checked);
+            var isChecked = this.checked; 
+            jQuery('.siswaCheckbox:enabled').prop('checked', isChecked);
         });
 
         // Handle Upload Ke Mesin button click
@@ -215,10 +227,59 @@
             
             if (selectedNISNs.length > 0) {
                 // Here, you can perform your upload logic with selectedNISNs
-                console.log('Selected NISNs:', selectedNISNs);
-                // Make an AJAX request or perform any action you need
+                // console.log('Selected NISNs:', selectedNISNs);
+                Swal.fire({
+                    title: 'Loading...',
+                    text: 'Please wait while the request is being processed',
+                    allowOutsideClick: false, // Disable closing by clicking outside
+                    didOpen: () => {
+                        Swal.showLoading(); // Show loading spinner
+                    }
+                });
+
+                $.ajax({
+                    url: '{{ route("uploadsiswa") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        nisns: selectedNISNs
+                    },
+                    success: function (response) {
+                        Swal.close();
+
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'The request has been processed successfully.',
+                            }).then((result)=>{
+		                        location.reload();
+		                    });;
+                        }
+                        else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error ' + response.message,
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again. ' + error,
+                        });
+                    }
+                });
             } else {
-                alert('Please select at least one Siswa to upload.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Please select at least one Siswa to upload.',
+                });
+                
             }
         });
 

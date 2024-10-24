@@ -15,6 +15,7 @@ use App\Http\Controllers\LocationController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\FingerSpotController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -144,7 +145,7 @@ Route::post('/siswa/store', [SiswaController::class, 'store'])->name('siswa-stor
 Route::post('/siswa/edit', [SiswaController::class, 'edit'])->name('siswa-edit')->middleware('auth');
 Route::delete('/siswa/delete/{id}', [SiswaController::class, 'destroy'])->name('siswa-delete')->middleware('auth');
 Route::post('/update-kelas-siswa', [SiswaController::class, 'updateKelas'])->name('update-kelas-siswa');
-
+Route::post('/uploadsiswa', [FingerSpotController::class, 'CreateUser'])->name('uploadsiswa')->middleware('auth');
 /*
 |--------------------------------------------------------------------------
 | Guru

@@ -42,6 +42,7 @@ class Siswa extends Migration
             $table->integer('WaliKecID');
             $table->integer('WaliKelID');
             $table->string('NoTlpWali');
+            $table->integer('isUploaded');
             $table->timestamps();
         });
     }
