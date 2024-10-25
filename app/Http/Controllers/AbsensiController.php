@@ -16,7 +16,7 @@ class AbsensiController extends Controller
         ->leftJoin('siswa', 'absensi.pin', '=', 'siswa.PINAbsensi')
         ->leftJoin('kelas', 'siswa.KelasId', '=', 'kelas.id') // Menggabungkan berdasarkan id kelas
         ->leftJoin('kelasparalel', 'siswa.KelasParalelId', '=', 'kelasparalel.id') 
-        ->select('siswa.*', 'kelas.NamaKelas','kelasparalel.NamaKelasParalel','absensi.scan_date') // Memilih kolom yang diinginkan
+        ->select('siswa.*', 'kelas.NamaKelas','kelasparalel.NamaKelasParalel','absensi.Scan_IN', 'absensi.Scan_OUT') // Memilih kolom yang diinginkan
         ->get(); // Mengambil hasil query
         
 

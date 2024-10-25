@@ -16,6 +16,8 @@ use App\Http\Controllers\GuruController;
 use App\Http\Controllers\MataPelajaranController;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\FingerSpotController;
+use App\Http\Controllers\TemplateMessageController;
+use App\Http\Controllers\InformasiSekolahController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -191,3 +193,27 @@ Route::get('get-provinsi/{provID}', [LocationController::class, 'getProvinsi']);
 Route::get('get-kota/{provID}', [LocationController::class, 'getKota']);
 Route::get('get-kecamatan/{kotaID}', [LocationController::class, 'getKecamatan']);
 Route::get('get-kelurahan/{kecID}', [LocationController::class, 'getKelurahan']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Template Message
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get('/templatemessage', [TemplateMessageController::class,'index'])->name('templatemessage')->middleware('auth');
+Route::get('/templatemessage/form/{id}', [TemplateMessageController::class,'Form'])->name('templatemessage-form')->middleware('auth');
+Route::post('/templatemessage/store', [TemplateMessageController::class, 'store'])->name('templatemessage-store')->middleware('auth');
+Route::post('/templatemessage/edit', [TemplateMessageController::class, 'edit'])->name('templatemessage-edit')->middleware('auth');
+Route::delete('/templatemessage/delete/{id}', [TemplateMessageController::class, 'destroy'])->name('templatemessage-delete')->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
+| Informasi Sekolah
+|--------------------------------------------------------------------------
+|
+*/
+
+Route::get('/informasisekolah', [InformasiSekolahController::class,'index'])->name('informasisekolah')->middleware('auth');
+Route::post('/informasisekolah/edit', [InformasiSekolahController::class, 'edit'])->name('informasisekolah-edit')->middleware('auth');

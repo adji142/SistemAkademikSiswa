@@ -53,7 +53,8 @@
                                                 <th>NIK</th>
                                                 <th>Nama</th>
                                                 <th>Pin Absensi</th>
-                                                <th>Waktu Absensi</th>
+                                                <th>Absen Masuk</th>
+                                                <th>Absen Keluar</th>
                                                 <th class="no-sort text-end">Action</th>
                                             </tr>
                                         </thead>
@@ -68,7 +69,8 @@
                                                     <td>{{ $data->NIK }}</td>
                                                     <td>{{ $data->NamaSiswa }}</td>
                                                     <td>{{ $data->PINAbsensi }}</td>
-                                                    <td>{{ $data->scan_date }}</td>
+                                                    <td>{{ $data->Scan_IN }}</td>
+                                                    <td>{{ $data->Scan_OUT }}</td>
                                                     
                                                 </tr>
                                                 @endforeach
