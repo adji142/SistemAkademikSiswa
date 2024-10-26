@@ -15,6 +15,8 @@
 		<link href="{{ asset('api/pace/pace-theme-flat-top.css')}}" rel="stylesheet" type="text/css" />
 		<link href="{{ asset('api/mcustomscrollbar/jquery.mCustomScrollbar.css')}}" rel="stylesheet" type="text/css" />
 		<link href="{{asset('api/datatable/jquery.dataTables.min.css')}}" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
 		<link href="{{asset('api/select2/select2.min.css')}}" rel="stylesheet" />
 		<link href="{{asset('api/multiple-select/multiple-select.min.css')}}" rel="stylesheet">
 
@@ -480,6 +482,10 @@
 	<script src="{{asset('js/script.bundle.js')}}"></script>
 	<script src="{{asset('js/script-slick.js')}}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
 	<script>
 		// In your Javascript (external .js resource or <script> tag)
 		jQuery(document).ready(function() {

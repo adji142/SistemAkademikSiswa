@@ -2,22 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Siswa;
+use App\Models\Kelas;
+use App\Models\KelasParalel;
+
 class AbsensiController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $absensi = Absensi::all();
+        // $absensi = Absensi::all();
+        $TglAwal = $request->input('TglAwal');
+        $TglAkhir = $request->input('TglAkhir');
+        $KelasID = $request->input('KelasID');
+        $KelasParalelID = $request->input('KelasParalelID');
 
-        $absensi = DB::table('absensi')
-        ->leftJoin('siswa', 'absensi.pin', '=', 'siswa.PINAbsensi')
-        ->leftJoin('kelas', 'siswa.KelasId', '=', 'kelas.id') // Menggabungkan berdasarkan id kelas
-        ->leftJoin('kelasparalel', 'siswa.KelasParalelId', '=', 'kelasparalel.id') 
-        ->select('siswa.*', 'kelas.NamaKelas','kelasparalel.NamaKelasParalel','absensi.Scan_IN', 'absensi.Scan_OUT') // Memilih kolom yang diinginkan
-        ->get(); // Mengambil hasil query
+        $kelas = Kelas::all();
+        $kelasparalel = KelasParalel::all();
+
+        $SQL = "absensi.TanggalAbsen,siswa.NISN AS NISNSiswa,siswa.NamaSiswa, siswa.PINAbsensi, absensi.Scan_IN AS DataAbsenMasuk,
+                absensi.Scan_OUT DataAbsenKeluar, hari.NamaHariID AS Hari, kelas.NamaKelas, kelasparalel.NamaKelasParalel,
+                CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
+        $subAbsensi = DB::table('absensi')
+                        ->select('absensi.PIN', 'absensi.TanggalAbsen', 'absensi.Scan_IN', 'absensi.Scan_OUT')
+                        ->whereBetween('absensi.TanggalAbsen', [$TglAwal, $TglAkhir]);
+
+        $absensi = Siswa::selectRaw($SQL)
+                    ->leftJoinSub($subAbsensi, 'absensi', function ($join)  {
+                        $join->on('siswa.PINAbsensi','absensi.PIN');
+                    })
+                    ->leftJoin('kelas', 'siswa.KelasID','kelas.id')
+                    ->leftJoin('kelasparalel','siswa.KelasParalelID', 'kelasparalel.id')
+                    ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN');
+
+        if ($KelasID != "") {
+            $absensi->where('siswa.KelasID', $KelasID);
+        }
+        if ($KelasParalelID != "") {
+            $absensi->where('siswa.KelasParalelID', $KelasParalelID);
+        }
         
 
         // $title = 'Delete Guru!';
@@ -25,7 +50,13 @@ class AbsensiController extends Controller
         // confirmDelete($title, $text);
 
         return view("absensi.absensi", [
-            'absensi' => $absensi,
+            'absensi' => $absensi->get(),
+            'kelas' => $kelas,
+            'kelasparalel' => $kelasparalel,
+            'oldTglAwal' => $TglAwal,
+            'oldTglAkhir' => $TglAkhir,
+            'oldKelasID' => $KelasID,
+            'oldKelasParalelID' => $KelasParalelID
         ]);
     }
 }

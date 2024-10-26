@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FingerSpotController;
-
+use App\Http\Controllers\SendMessageController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,3 +19,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::get('attlog',[FingerSpotController::class,'GetAttandance']);
+Route::get('sendabsennotification/{id}',[SendMessageController::class,'SendAbsenNotification']);

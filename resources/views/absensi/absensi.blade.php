@@ -35,7 +35,58 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-12 px-4">
+                        <div class="card card-custom gutter-b bg-white border-0">
+                            <div class="card-header" >
+								Filter Data
+							</div>
+                            <div class="card-body">
+                                <form action="{{ route('absensi') }}">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label  class="text-body">Tanggal Awal</label>
+                                            <input type="date" name="TglAwal" id="TglAwal" class="form-control">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label  class="text-body">Tanggal Akhir</label>
+                                            <input type="date" name="TglAkhir" id="TglAkhir" class="form-control">
+                                        </div>
+                                        
+                                        <div class="col-md-3">
+											<label  class="text-body">Kelas</label>
+											<select name="KelasID" id="KelasID" class="js-example-basic-single js-states form-control bg-transparent" >
+												<option value="">Pilih Kelas</option>
+												@foreach($kelas as $ko)
+													<option value="{{ $ko->id }}" {{ $ko->id == $oldKelasID ? 'selected' : '' }}>
+			                                            {{ $ko->NamaKelas }}
+			                                        </option>
+												@endforeach
+												
+											</select>
+										</div>
+
+                                        <div class="col-md-3">
+											<label  class="text-body">Kelas Paralel</label>
+											<select name="KelasParalelID" id="KelasParalelID" class="js-example-basic-single js-states form-control bg-transparent" >
+												<option value="">Pilih Kelas Paralel</option>
+												
+											</select>
+										</div>
+
+                                        <div class="col-md-3">
+                                            <br>
+                                            <button type="submit" class="btn btn-outline-primary rounded-pill font-weight-bold me-1 mb-1">Cari Data</button>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!--begin::Table-->
+                
                 <div class="row">
                     <div class="col-12 px-4">
                         <div class="card card-custom gutter-b bg-white border-0">
@@ -46,32 +97,28 @@
                                     <table id="orderTable" class="display" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th>
-                                                    <input type="checkbox" id="checkAll">
-                                                </th>
+                                                <th width="70px">Tanggal</th>
                                                 <th>NISN</th>
-                                                <th>NIK</th>
                                                 <th>Nama</th>
                                                 <th>Pin Absensi</th>
+                                                <th>Kelas</th>
                                                 <th>Absen Masuk</th>
                                                 <th>Absen Keluar</th>
-                                                <th class="no-sort text-end">Action</th>
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if (count($absensi) > 0)
                                                 @foreach($absensi as $data)
                                                 <tr>
-                                                    <td>
-                                                        <input type="checkbox" class="absensiCheckbox" value="{{ $data->NISN }}">
-                                                    </td>
-                                                    <td>{{ $data->NISN }}</td>
-                                                    <td>{{ $data->NIK }}</td>
+                                                    <td>{{ $data->TanggalAbsen }}</td>
+                                                    <td>{{ $data->NISNSiswa }}</td>
                                                     <td>{{ $data->NamaSiswa }}</td>
                                                     <td>{{ $data->PINAbsensi }}</td>
-                                                    <td>{{ $data->Scan_IN }}</td>
-                                                    <td>{{ $data->Scan_OUT }}</td>
-                                                    
+                                                    <td>{{ $data->NamaKelas." / ".$data->NamaKelasParalel }}</td>
+                                                    <td>{{ $data->DataAbsenMasuk }}</td>
+                                                    <td>{{ $data->DataAbsenKeluar }}</td>
+                                                    <td>{{ $data->StatusKehadiran }}</td>
                                                 </tr>
                                                 @endforeach
                                             @endif
@@ -94,7 +141,33 @@
 @push('scripts')
 <script type="text/javascript">
     jQuery(document).ready(function() {
+        var now = new Date();
+    	var day = ("0" + now.getDate()).slice(-2);
+    	var month = ("0" + (now.getMonth() + 1)).slice(-2);
+    	var firstDay = now.getFullYear()+"-"+month+"-01";
+    	var NowDay = now.getFullYear()+"-"+month+"-"+day;
+
+        var oldTglAwal = "{{ $oldTglAwal }}";
+        var oldTglAkhir = "{{ $oldTglAkhir }}";
+
+        // console.log(oldTglAkhir);
+
+        
+    	jQuery('#TglAwal').val(oldTglAwal == firstDay? firstDay : oldTglAwal);
+    	jQuery('#TglAkhir').val(oldTglAkhir == NowDay ? NowDay : oldTglAkhir);
+
         jQuery('#orderTable').DataTable({
+            dom:"Bfrtip",
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Export to Excel',
+                    title: 'Data Absensi Periode : ' +jQuery('#TglAwal').val() + " s/d " + jQuery('#TglAkhir').val() ,
+                    exportOptions: {
+                        columns: ':visible'
+                    }
+                },
+            ],
             "pagingType": "simple_numbers",
             "columnDefs": [{
                 "targets": 'no-sort',
@@ -107,25 +180,22 @@
             jQuery('.absensiCheckbox').prop('checked', this.checked);
         });
 
-        // // Handle Upload Ke Mesin button click
-        // jQuery('#uploadButton').on('click', function() {
-        //     let selectedNIKs = [];
-        //     jQuery('.absensiCheckbox:checked').each(function() {
-        //         selectedNIKs.push(jQuery(this).val());
-        //     });
-            
-        //     if (selectedNIKs.length > 0) {
-        //         // Here, you can perform your upload logic with selectedNISNs
-        //         console.log('Selected NIKs:', selectedNIKs);
-        //         // Make an AJAX request or perform any action you need
-        //     } else {
-        //         alert('Please select at least one Absensi to upload.');
-        //     }
-        // });
-
-       
-
-
+    });
+    jQuery('#KelasID').change(function() {
+        var kelasID = jQuery(this).val();
+        if (kelasID) {
+            jQuery.ajax({
+                url: '{{ url("get-kelas-paralel") }}/' + kelasID,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    jQuery('#KelasParalelID').empty().append('<option value="">Select Kelas Paralel</option>');
+                    jQuery.each(data, function(key, value) {
+                        jQuery('#KelasParalelID').append('<option value="'+ value.id +'">'+ value.NamaKelasParalel +'</option>');
+                    });
+                }
+            });
+        }
     });
 </script>
 @endpush
