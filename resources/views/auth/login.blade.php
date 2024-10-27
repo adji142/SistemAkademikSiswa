@@ -42,7 +42,7 @@ License: You must have a valid license purchased only from themeforest(the above
 			<div class="maintitle">
 				<div class="card-title mb-0">
 					<h3 class="card-label font-weight-bold mb-0 text-body">
-						<img src="{{ asset('images/misc/logofront.png')}}" alt="logo" width="30%">
+						<img src="{{ asset('images/misc/logofront2.png')}}" alt="logo" width="30%">
 					</h3>
 				
 				</div>
