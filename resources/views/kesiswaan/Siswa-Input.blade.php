@@ -64,7 +64,7 @@
             <div id="imagePreview" class="rounded" style="background-image: url({{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : './assets/images/carousel/slide3.jpg' }});"></div>
         </div>
     </div>
-    <!-- <img id="imagePreviewImg" src="{{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : '' }}" class="mt-3" style="max-width: 200px; display: {{ count($siswa) > 0 ? 'block' : 'none' }};"> -->
+    <!-- <img id="imagePreviewImg" src="{{ count($siswa) > 0 ? asset('storage/app/public/uploads/siswa/' . $siswa[0]['Foto']) : '' }}" class="mt-3" style="max-width: 200px; display: {{ count($siswa) > 0 ? 'block' : 'none' }};"> -->
 </fieldset>
                                             </div>
                                         </center>

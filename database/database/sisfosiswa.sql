@@ -144,7 +144,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `trg_Review_Add` AFTER INSERT ON `att_log` FOR EACH ROW BEGIN 
+/*!50003 CREATE*/ /*!50003 TRIGGER `trg_Review_Add` AFTER INSERT ON `att_log` FOR EACH ROW BEGIN 
 	SET @RecCount = 0;
 	SELECT COUNT(*) into @RecCount FROM absensi a where a.PIN = new.pin and a.TanggalAbsen = DATE(new.scan_date);
 	IF @RecCount > 0
@@ -193,7 +193,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `trg_Review_Delete` AFTER DELETE ON `att_log` FOR EACH ROW BEGIN
+/*!50003 CREATE*/ /*!50003 TRIGGER `trg_Review_Delete` AFTER DELETE ON `att_log` FOR EACH ROW BEGIN
 	DELETE FROM absensi WHERE PIN = OLD.pin and TanggalAbsen = DATE(old.scan_date);
 END */;;
 DELIMITER ;
