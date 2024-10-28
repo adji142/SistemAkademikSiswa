@@ -61,9 +61,10 @@
             <label for="imageUpload">image upload</label>
         </div>
         <div class="avatar-preview">
-            <div id="imagePreview" class="rounded" style="background-image: url({{ count($siswa) > 0 ? Storage::url('uploads/siswa/' . $siswa[0]['Foto'])) : './assets/images/carousel/slide3.jpg' }});"></div>
+            <div id="imagePreview" class="rounded" style="background-image: url({{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : './assets/images/carousel/slide3.jpg' }});"></div>
         </div>
     </div>
+    <!-- <img id="imagePreviewImg" src="{{ count($siswa) > 0 ? asset('storage/uploads/siswa/' . $siswa[0]['Foto']) : '' }}" class="mt-3" style="max-width: 200px; display: {{ count($siswa) > 0 ? 'block' : 'none' }};"> -->
 </fieldset>
                                             </div>
                                         </center>
