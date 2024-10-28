@@ -117,7 +117,11 @@
                                                     <td>{{ $data->PINAbsensi }}</td>
                                                     <td>{{ $data->NamaKelas." / ".$data->NamaKelasParalel }}</td>
                                                     <td>{{ $data->DataAbsenMasuk }}</td>
-                                                    <td>{{ $data->DataAbsenKeluar }}</td>
+                                                    @if ($data->DataAbsenMasuk == $data->DataAbsenKeluar)
+                                                        <td></td>
+                                                    @else
+                                                        <td>{{ $data->DataAbsenKeluar }}</td>
+                                                    @endif
                                                     <td>{{ $data->StatusKehadiran }}</td>
                                                 </tr>
                                                 @endforeach
@@ -152,9 +156,14 @@
 
         // console.log(oldTglAkhir);
 
-        
-    	jQuery('#TglAwal').val(oldTglAwal == firstDay? firstDay : oldTglAwal);
-    	jQuery('#TglAkhir').val(oldTglAkhir == NowDay ? NowDay : oldTglAkhir);
+        if (typeof oldTglAwal === 'undefined') {
+            jQuery('#TglAwal').val(firstDay);
+        } else {
+            jQuery('#TglAwal').val(oldTglAwal);
+        }
+
+    	
+    	jQuery('#TglAkhir').val(typeof oldTglAkhir == 'undefined' ? NowDay : oldTglAkhir);
 
         jQuery('#orderTable').DataTable({
             dom:"Bfrtip",

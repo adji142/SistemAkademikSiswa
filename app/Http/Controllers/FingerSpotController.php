@@ -86,6 +86,8 @@ jump:
         $currentDate = now()->toDateString();
         $previousDate = now()->subDay()->toDateString();
 
+        // $currentDate = '2024-10-25';
+        // $previousDate = '2024-10-24';
         // dd($previousDate);
         try {
             $oMesin = MesinAbsensi::all();
