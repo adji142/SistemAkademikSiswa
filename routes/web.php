@@ -154,6 +154,7 @@ Route::delete('/siswa/delete/{id}', [SiswaController::class, 'destroy'])->name('
 Route::post('/update-kelas-siswa', [SiswaController::class, 'updateKelas'])->name('update-kelas-siswa');
 Route::post('/uploadsiswa', [FingerSpotController::class, 'CreateUser'])->name('uploadsiswa')->middleware('auth');
 Route::post('/importExcel', [SiswaController::class, 'importExcel'])->name('importExcel');
+Route::get('/siswa/download/{filename}', [SiswaController::class,'download'])->name('siswa-download')->middleware('auth');
 /*
 |--------------------------------------------------------------------------
 | Guru

@@ -20,34 +20,27 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 px-4">
-            <div class="row">
-    <div class="col-lg-12 col-xl-12 px-4">
-        <div class="card card-custom gutter-b bg-transparent shadow-none border-0">
-            <div class="card-header align-items-center border-bottom-dark px-0">
-                <div class="card-title mb-0">
-                    <h3 class="card-label mb-0 font-weight-bold text-body">Data Siswa</h3>
+                <div class="row">
+                    <div class="col-lg-12 col-xl-12 px-4">
+                        <div class="card card-custom gutter-b bg-transparent shadow-none border-0">
+                            <div class="card-header align-items-center border-bottom-dark px-0">
+                                <div class="card-title mb-0">
+                                    <h3 class="card-label mb-0 font-weight-bold text-body">Data Siswa</h3>
+                                </div>
+                                <div class="icons d-flex align-items-center">
+                                    <input type="text" id="fileName" class="form-control me-2" placeholder="Pilih File Excel" readonly style="max-width: 300px;" />
+                                    <button id="selectFileButton" class="btn btn-outline-success me-2 w-100" style="max-width: 100px;">Pilih File</button>
+                                    <button id="uploadExcelButton" class="btn btn-success me-2 w-100" style="max-width: 100px;">Upload</button>
+                                    <a href="{{ url('siswa/form/-') }}" class="btn btn-outline-primary w-100 rounded-pill">Tambah Data</a>
+                                </div>
+
+                                <!-- Input file hidden (will be triggered by 'selectFileButton') -->
+                                <input type="file" id="excelFile" style="display: none;" accept=".xls,.xlsx" />
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="icons d-flex align-items-center">
-    <!-- Input Text untuk Menampilkan Nama File -->
-    <input type="text" id="fileName" class="form-control me-2" placeholder="Pilih File Excel" readonly style="max-width: 300px;" />
-  
-       <!-- Button Pilih File dengan lebar yang sama dengan Upload -->
-    <button id="selectFileButton" class="btn btn-outline-success me-2 w-100" style="max-width: 100px;">Pilih File</button>
-    
-    <!-- Button Upload File -->
-    <button id="uploadExcelButton" class="btn btn-success me-2 w-100" style="max-width: 100px;">Upload</button>
-
-    <!-- Button Tambah Data -->
-    <a href="{{ url('siswa/form/-') }}" class="btn btn-outline-primary rounded-pill">Tambah Data</a>
-</div>
-
-<!-- Input file hidden (will be triggered by 'selectFileButton') -->
-<input type="file" id="excelFile" style="display: none;" accept=".xls,.xlsx" />
-
-            </div>
-        </div>
-    </div>
-</div>
 
 
                 <!--begin::Table-->
@@ -62,7 +55,8 @@
                                     <div class="d-flex flex-wrap mb-2 mb-md-0">
                                         <button id="uploadButton" class="btn btn-success text-white font-weight-bold me-2">Upload Ke Mesin</button>
                                         <button id="naikKelasButton" class="btn btn-success text-white font-weight-bold me-2">Naik Kelas</button>
-                                                        </div>
+                                        <a href="{{ route('siswa-download', ['filename' => 'siswa.xlsx']) }}" class="btn btn-success text-white font-weight-bold me-2">Download Sample Import</a>
+                                    </div>
                                     
                                     <!-- Filter Dropdown di kanan -->
                                     <div class="d-flex flex-wrap">

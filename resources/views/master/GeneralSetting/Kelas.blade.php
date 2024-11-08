@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-white mb-0 px-0 py-2">
-                <li class="breadcrumb-item active" aria-current="page">Tahun Ajaran</li>
+                <li class="breadcrumb-item active" aria-current="page">Kelas</li>
             </ol>
         </nav>
     </div>
@@ -25,7 +25,7 @@
                         <div class="card card-custom gutter-b bg-transparent shadow-none border-0">
                             <div class="card-header align-items-center border-bottom-dark px-0">
                                 <div class="card-title mb-0">
-                                    <h3 class="card-label mb-0 font-weight-bold text-body">Tahun Ajaran - Nama Kelas</h3>
+                                    <h3 class="card-label mb-0 font-weight-bold text-body">Kelas</h3>
                                 </div>
                                 <div class="icons d-flex">
                                     <a href="{{ url('kelas/form/-') }}" class="btn btn-outline-primary rounded-pill font-weight-bold me-1 mb-1">Tambah Data</a>
@@ -44,7 +44,8 @@
                                     <table id="orderTable" class="display" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th>NamaKelas</th>
+                                                <th>Kelas ID</th>
+                                                <th>Nama Kelas</th>
                                                 <th class="no-sort text-end">Action</th>
                                             </tr>
                                         </thead>
@@ -52,6 +53,7 @@
                                             @if (count($kelas) > 0)
                                                 @foreach($kelas as $kelas)
                                                 <tr>
+                                                    <td>{{ $kelas['id'] }}</td>
                                                     <td>{{ $kelas['NamaKelas'] }}</td>
                                                     <td>
                                                         <div class="card-toolbar text-end">

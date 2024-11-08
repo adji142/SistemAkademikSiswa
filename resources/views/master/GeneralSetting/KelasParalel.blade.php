@@ -62,6 +62,7 @@
                                     <table id="orderTable" class="display" style="width:100%">
                                         <thead>
                                             <tr>
+                                                <th>Kelas Paralel ID</th>
                                                 <th>Nama Kelas</th>
                                                 <th>Nama Kelas Paralel</th>
                                                 <th class="no-sort text-end">Action</th>
@@ -71,6 +72,7 @@
                                             @if (count($kelasparalel) > 0)
                                                 @foreach($kelasparalel as $paralel)
                                                 <tr>
+                                                    <td>{{ $paralel['id'] }}</td>
                                                     <td>{{ $paralel['NamaKelas'] }}</td>
                                                     <td>{{ $paralel['NamaKelasParalel'] }}</td>
                                                     <td>

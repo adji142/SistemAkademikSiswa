@@ -315,5 +315,16 @@ class SiswaController extends Controller
             ]);
         }
     }
+
+    public function download($filename)
+    {
+        $path = public_path('doc/' . $filename);
+
+        if (file_exists($path)) {
+            return response()->download($path);
+        } else {
+            return redirect()->back()->with('error', 'File not found.');
+        }
+    }
     
 }

@@ -44,6 +44,7 @@
                                     <table id="orderTable" class="display" style="width:100%">
                                         <thead>
                                             <tr>
+                                                <th>Tahun Ajaran ID</th>
                                                 <th>Nama Tahun Ajaran</th>
                                                 <th>Tgl Mulai</th>
                                                 <th>Tgl Selesai</th>
@@ -54,6 +55,7 @@
                                             @if (count($tahunajaran) > 0)
                                                 @foreach($tahunajaran as $ta)
                                                 <tr>
+                                                    <td>{{ $ta['id'] }}</td>
                                                     <td>{{ $ta['NamaTahunAjaran'] }}</td>
                                                     <td>{{ $ta['TglAwal'] }}</td>
                                                     <td>{{ $ta['TglSelesai'] }}</td>
