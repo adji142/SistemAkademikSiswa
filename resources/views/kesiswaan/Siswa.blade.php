@@ -20,20 +20,35 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 px-4">
-                <div class="row">
-                    <div class="col-lg-12 col-xl-12 px-4">
-                        <div class="card card-custom gutter-b bg-transparent shadow-none border-0">
-                            <div class="card-header align-items-center border-bottom-dark px-0">
-                                <div class="card-title mb-0">
-                                    <h3 class="card-label mb-0 font-weight-bold text-body">Data Siswa</h3>
-                                </div>
-                                <div class="icons d-flex">
-                                    <a href="{{ url('siswa/form/-') }}" class="btn btn-outline-primary rounded-pill font-weight-bold me-1 mb-1">Tambah Data</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="row">
+    <div class="col-lg-12 col-xl-12 px-4">
+        <div class="card card-custom gutter-b bg-transparent shadow-none border-0">
+            <div class="card-header align-items-center border-bottom-dark px-0">
+                <div class="card-title mb-0">
+                    <h3 class="card-label mb-0 font-weight-bold text-body">Data Siswa</h3>
                 </div>
+                <div class="icons d-flex align-items-center">
+    <!-- Input Text untuk Menampilkan Nama File -->
+    <input type="text" id="fileName" class="form-control me-2" placeholder="Pilih File Excel" readonly style="max-width: 300px;" />
+  
+       <!-- Button Pilih File dengan lebar yang sama dengan Upload -->
+    <button id="selectFileButton" class="btn btn-outline-success me-2 w-100" style="max-width: 100px;">Pilih File</button>
+    
+    <!-- Button Upload File -->
+    <button id="uploadExcelButton" class="btn btn-success me-2 w-100" style="max-width: 100px;">Upload</button>
+
+    <!-- Button Tambah Data -->
+    <a href="{{ url('siswa/form/-') }}" class="btn btn-outline-primary rounded-pill">Tambah Data</a>
+</div>
+
+<!-- Input file hidden (will be triggered by 'selectFileButton') -->
+<input type="file" id="excelFile" style="display: none;" accept=".xls,.xlsx" />
+
+            </div>
+        </div>
+    </div>
+</div>
+
 
                 <!--begin::Table-->
                 <div class="row">
@@ -42,11 +57,12 @@
                             <div class="card-body">
 
                             <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
-                                    <!-- Tombol di kiri -->
+                                    
+                            <!-- Tombol di kiri -->
                                     <div class="d-flex flex-wrap mb-2 mb-md-0">
                                         <button id="uploadButton" class="btn btn-success text-white font-weight-bold me-2">Upload Ke Mesin</button>
-                                        <button id="naikKelasButton" class="btn btn-success text-white font-weight-bold">Naik Kelas</button>
-                                    </div>
+                                        <button id="naikKelasButton" class="btn btn-success text-white font-weight-bold me-2">Naik Kelas</button>
+                                                        </div>
                                     
                                     <!-- Filter Dropdown di kanan -->
                                     <div class="d-flex flex-wrap">
@@ -283,7 +299,87 @@
             }
         });
 
-      
+   // Button untuk memilih file
+$('#selectFileButton').on('click', function() {
+    // Memicu dialog pemilihan file
+    $('#excelFile').trigger('click');
+});
+
+// Menangani perubahan pada input file
+$('#excelFile').on('change', function() {
+    var fileName = $(this).val().split('\\').pop(); // Mengambil nama file
+    $('#fileName').val(fileName); // Memasukkan nama file ke input text
+});
+
+// Handle Upload Excel button click
+$('#uploadExcelButton').on('click', function() {
+    // Mengambil file yang dipilih dari input file
+    let fileInput = $('#excelFile')[0];
+    
+    // Memastikan file telah dipilih
+    if (fileInput.files.length === 0) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Please select an Excel file to upload.',
+        });
+        return;
+    }
+    
+    let formData = new FormData();
+    formData.append('file', fileInput.files[0]); // Append the selected file
+    formData.append('_token', '{{ csrf_token() }}'); // Add CSRF token
+
+    Swal.fire({
+        title: 'Uploading...',
+        text: 'Please wait while the file is being uploaded',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        url: '{{ route("importExcel") }}', // The route for handling file upload
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(response) {
+            Swal.close();
+            
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: response.message || 'The file has been uploaded successfully.',
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: response.message || 'An error occurred during the upload.',
+                });
+            }
+        },
+        error: function(xhr, status, error) {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Something went wrong. Please try again. ' + error,
+            });
+        }
+    });
+});
+
+
+
+
+
+
 
      
 

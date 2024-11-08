@@ -14,8 +14,9 @@ class Siswa extends Model
     protected $keyType = 'string'; // Set primary key sebagai string
 
     protected $fillable = [
+        'NISN',
         'NIK',
-        'NamaSiswa',
+        'PINAbsensi',
             'NamaSiswa' ,
             'JenisKelamin' ,
             'TempatLahir' ,

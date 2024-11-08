@@ -13,6 +13,8 @@ use App\Models\Kelas;
 use App\Models\KelasParalel;
 use App\Models\Provinsi;
 use App\Models\TahunAjaran;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class SiswaController extends Controller
 {
@@ -258,4 +260,60 @@ class SiswaController extends Controller
             return redirect()->back()->withErrors($th->getMessage());
         }
     }
+
+    public function importExcel(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls'
+        ]);
+    
+        try {
+            $file = $request->file('file');
+            $spreadsheet = IOFactory::load($file->getPathname());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+    
+            foreach ($rows as $index => $row) {
+                if ($index == 0) {
+                    // Skip header row (if any)
+                    continue;
+                }
+    
+                Siswa::create([
+                    'NISN' => $row[0],
+                    'NIK' => $row[1],
+                    'PINAbsensi' => $row[2],
+                    'NamaSiswa' => $row[3],
+                    'JenisKelamin' => $row[4],
+                    'TempatLahir' => $row[5],
+                    'TanggalLahir' => $row[6],
+                    'AlamatSiswa' => $row[7],
+                    'ProvID' => $row[8],
+                    'KotaID' => $row[9],
+                    'KecID' => $row[10],
+                    'KelID' => $row[11],
+                    'KelasID' => $row[12],
+                    'KelasParalelID' => $row[13],
+                    'Email' => $row[14],
+                    'NoHP' => $row[15],
+                    'tahunajaran' => $row[16],
+                    'Status' => $row[17],
+                    'NamaWali' => $row[18],
+                    'HubunganWali' => $row[19],
+                    'NoTlpWali' => $row[20],
+                ]);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diimport!',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $th->getMessage(),
+            ]);
+        }
+    }
+    
 }
