@@ -301,6 +301,7 @@ class SiswaController extends Controller
                     'NamaWali' => $row[18],
                     'HubunganWali' => $row[19],
                     'NoTlpWali' => $row[20],
+                    'tempStore' => Hash::make($row[0]),
                 ]);
             }
     
