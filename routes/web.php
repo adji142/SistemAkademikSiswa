@@ -33,7 +33,10 @@ Route::get('/generate', function(){
     \Illuminate\Support\Facades\Artisan::call('storage:link');
     echo 'ok';
  });
- 
+
+Route::get('/foo', function () {
+    Artisan::call('storage:link');
+});
 Route::get('/', [LoginController::class,'login'])->name('login');
 Route::get('/daftar', [LoginController::class,'Register'])->name('daftar');
 Route::post('/action-login', [LoginController::class, 'action_login'])->name('action-login')->middleware('web');;
