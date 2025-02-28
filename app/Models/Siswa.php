@@ -39,7 +39,8 @@ class Siswa extends Model
             'WaliKelID' ,
             'HubunganWali',
             'NamaWali' ,
-            'NoTlpWali' 
+            'NoTlpWali' ,
+            'tempStore'
         // Tambahkan atribut lain sesuai kebutuhan
     ];
 }
