@@ -167,10 +167,10 @@
             }],
             "createdRow": function(row, data, dataIndex) {
                 // Disable the checkbox if the NISN is empty or another condition is met
-                console.log(data[12]);
-                if (data[12] == 1) {
-                    jQuery(row).find('.siswaCheckbox').prop('disabled', true);
-                }
+                // console.log(data[12]);
+                // if (data[12] == 1) {
+                //     jQuery(row).find('.siswaCheckbox').prop('disabled', true);
+                // }
                 // You can add other conditions here if necessary
                 // Example: if (data.status === 'inactive') { ... }
             }

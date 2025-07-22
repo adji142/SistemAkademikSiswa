@@ -20,3 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('attlog',[FingerSpotController::class,'GetAttandance']);
 Route::get('sendabsennotification/{id}',[SendMessageController::class,'SendAbsenNotification']);
+Route::post('/attwebhook', [FingerSpotController::class, 'RealtimeAttandance'])->name('attwebhook');

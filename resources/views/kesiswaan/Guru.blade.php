@@ -118,18 +118,68 @@
         });
 
         // Handle Upload Ke Mesin button click
+
         jQuery('#uploadButton').on('click', function() {
-            let selectedNIKs = [];
+            let selectedNISNs = [];
             jQuery('.guruCheckbox:checked').each(function() {
-                selectedNIKs.push(jQuery(this).val());
+                selectedNISNs.push(jQuery(this).val());
             });
             
-            if (selectedNIKs.length > 0) {
+            if (selectedNISNs.length > 0) {
                 // Here, you can perform your upload logic with selectedNISNs
-                console.log('Selected NIKs:', selectedNIKs);
-                // Make an AJAX request or perform any action you need
+                // console.log('Selected NISNs:', selectedNISNs);
+                Swal.fire({
+                    title: 'Loading...',
+                    text: 'Please wait while the request is being processed',
+                    allowOutsideClick: false, // Disable closing by clicking outside
+                    didOpen: () => {
+                        Swal.showLoading(); // Show loading spinner
+                    }
+                });
+
+                $.ajax({
+                    url: '{{ route("uploadguru") }}',
+                    method: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        nisns: selectedNISNs
+                    },
+                    success: function (response) {
+                        Swal.close();
+
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'The request has been processed successfully.',
+                            }).then((result)=>{
+		                        location.reload();
+		                    });;
+                        }
+                        else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Error ' + response.message,
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again. ' + error,
+                        });
+                    }
+                });
             } else {
-                alert('Please select at least one Guru to upload.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Please select at least one Siswa to upload.',
+                });
+                
             }
         });
 
