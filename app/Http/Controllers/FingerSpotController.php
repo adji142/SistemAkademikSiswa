@@ -276,8 +276,6 @@ jump:
             foreach ($absensi->toArray()[0] as $key => $value) {
                 $message = str_replace("#$key#", $value, $message);
             }
-
-            $odata['message'] = $message;
             // dd($message);
             // Send
             if ($NoTlpWali != "") {
@@ -291,12 +289,17 @@ jump:
                     $oLogInsert->save();
 
                     Log::debug('Send WhatsApp');
+
+                    $odata['message'] = $message;
+                    // $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
+                    // array_push($oMessageResponse, $oSend);
+
+                    $data['data'] = $oMessageResponse;
                 }
                 else{
                     Log::debug('Jangan Send WhatsApp');
                 }
-            //     $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
-            //     array_push($oMessageResponse, $oSend);
+            
             }
 
             Log::debug("Webhook Fingerspot:", [
