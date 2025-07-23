@@ -220,76 +220,86 @@ jump:
         return response()->json($data);
     }
 
-    function RealtimeAttandance(Request $request) {
-        $odata = array('success'=>true, 'message'=>'', 'data'=>array());
+    public function RealtimeAttandance(Request $request)
+    {
+        $odata = ['success' => true, 'message' => '', 'data' => []];
+
+        // Log semua data yang diterima
         Log::debug('Webhook Fingerspot Diterima:', $request->all());
-        
-        $data = $request->validate([
-            'type' => 'required|in:attlog',
-            'cloud_id' => 'required|string',
-            'data.pin' => 'required|string',
-            'data.scan' => 'required|date_format:Y-m-d H:i',
-            'data.verify' => 'required|string',
-            'data.status_scan' => 'required|string',
+
+        // Ambil data tanpa validasi
+        $type = $request->input('type');
+        $cloud_id = $request->input('cloud_id');
+        $pin = $request->input('data.pin');
+        $scan = $request->input('data.scan');
+        $verify = $request->input('data.verify');
+        $status_scan = $request->input('data.status_scan');
+
+        Log::debug('Data :', [
+            'type' => $type,
+            'cloud_id' => $cloud_id,
+            'pin' => $pin,
+            'scan' => $scan,
+            'verify' => $verify,
+            'status_scan' => $status_scan,
         ]);
-        
-        Log::debug('Data :', $data);
-        Log::debug('Type :', $data['type']);
 
-
-        if($data['type'] == 'attlog'){
+        if ($type == 'attlog') {
+            // Simpan ke tabel attlog
             $absensi = new AttLog();
-            $absensi->sn = $data['cloud_id'];
-            $absensi->scan_date = $data['data']['scan'];
-            $absensi->pin = $data['data']['pin'];
-            $absensi->verifymode = $data['data']['verify'];
-            $absensi->inoutmode = $data['data']['verify'];
+            $absensi->sn = $cloud_id;
+            $absensi->scan_date = $scan;
+            $absensi->pin = $pin;
+            $absensi->verifymode = $verify;
+            $absensi->inoutmode = $verify;
             $absensi->reserved = 0;
             $absensi->work_code = 0;
             $absensi->att_id = "";
             $absensi->save();
 
-            // Send Message
+            // Lanjutkan proses pengambilan data siswa dan kirim pesan
             $template = TemplateMessage::where('id', '2')->first();
             $currentDate = now()->toDateString();
-            $oMessageResponse = array();
+            $oMessageResponse = [];
 
-            $siswa = Siswa::where('PINAbsensi', $data['data']['pin'])->first();
+            $siswa = Siswa::where('PINAbsensi', $pin)->first();
 
             if ($siswa) {
                 $NoTlpWali = $siswa->NoTlpWali;
-                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, siswa.NISN AS NISNSiswa,
-                siswa.NamaSiswa, siswa.NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
-                absensi.Scan_IN AS DataAbsenMasuk,absensi.Scan_OUT DataAbsenKeluar, NOW() TanggalHariIni, 
-                hari.NamaHariID AS Hari, CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
-                $subAbsensi = DB::table('absensi')
-                                ->select('absensi.PIN', 'absensi.TanggalAbsen', 'absensi.Scan_IN', 'absensi.Scan_OUT')
-                                ->where('absensi.PIN', $data['data']['pin']);
 
-                $absensi = Siswa::selectRaw($SQL)
-                            ->leftJoinSub($subAbsensi, 'absensi', function ($join)  {
-                                $join->on('siswa.PINAbsensi','absensi.PIN');
-                            })
-                            ->leftJoin('kelas', 'siswa.KelasID','kelas.id')
-                            ->leftJoin('kelasparalel','siswa.KelasParalelID', 'kelasparalel.id')
-                            ->leftJoin('datasekolah',DB::raw('1'),DB::raw('1'))
-                            ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN')
-                            ->where('siswa.PINAbsensi', $data['data']['pin'])
-                            ->get();
+                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, siswa.NISN AS NISNSiswa,
+                    siswa.NamaSiswa, siswa.NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
+                    absensi.Scan_IN AS DataAbsenMasuk,absensi.Scan_OUT DataAbsenKeluar, NOW() TanggalHariIni, 
+                    hari.NamaHariID AS Hari, CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
+
+                $subAbsensi = DB::table('absensi')
+                    ->select('absensi.PIN', 'absensi.TanggalAbsen', 'absensi.Scan_IN', 'absensi.Scan_OUT')
+                    ->where('absensi.PIN', $pin);
+
+                $absensiData = Siswa::selectRaw($SQL)
+                    ->leftJoinSub($subAbsensi, 'absensi', function ($join) {
+                        $join->on('siswa.PINAbsensi', 'absensi.PIN');
+                    })
+                    ->leftJoin('kelas', 'siswa.KelasID', 'kelas.id')
+                    ->leftJoin('kelasparalel', 'siswa.KelasParalelID', 'kelasparalel.id')
+                    ->leftJoin('datasekolah', DB::raw('1'), DB::raw('1'))
+                    ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN')
+                    ->where('siswa.PINAbsensi', $pin)
+                    ->get();
 
                 $message = $template->TemplateContent;
-                foreach ($absensi->toArray()[0] as $key => $value) {
+                foreach ($absensiData->toArray()[0] as $key => $value) {
                     $message = str_replace("#$key#", $value, $message);
                 }
-                // dd($message);
-                // Send
-                if ($NoTlpWali != "") {
-                    $oLog = SendedLogModel::where('pin', $data['data']['pin'])
-                                ->where('LastSended', $currentDate)
-                                ->first();
-                    if(!$oLog){
+
+                if (!empty($NoTlpWali)) {
+                    $oLog = SendedLogModel::where('pin', $pin)
+                        ->where('LastSended', $currentDate)
+                        ->first();
+
+                    if (!$oLog) {
                         $oLogInsert = new SendedLogModel();
-                        $oLogInsert->pin = $data['data']['pin'];
+                        $oLogInsert->pin = $pin;
                         $oLogInsert->LastSended = $currentDate;
                         $oLogInsert->save();
 
@@ -298,23 +308,19 @@ jump:
                         $odata['message'] = $message;
                         // $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
                         // array_push($oMessageResponse, $oSend);
-
-                        $data['data'] = $oMessageResponse;
-                    }
-                    else{
+                        $odata['data'] = $oMessageResponse;
+                    } else {
                         Log::debug('Jangan Send WhatsApp');
                     }
-                
                 }
 
                 Log::debug("Webhook Fingerspot:", [
                     'Result' => json_encode($odata, JSON_PRETTY_PRINT)
                 ]);
-            }   
-        }
-        else{
+            }
+        } else {
             Log::debug("Ini Bukan Attandance");
         }
-
     }
+
 }
