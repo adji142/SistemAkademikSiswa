@@ -232,6 +232,9 @@ jump:
             'data.verify' => 'required|string',
             'data.status_scan' => 'required|string',
         ]);
+        
+        Log::debug('Data :', $data);
+        Log::debug('Type :', $data['type']);
 
 
         if($data['type'] == 'attlog'){
