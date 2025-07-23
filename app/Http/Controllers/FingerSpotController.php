@@ -251,7 +251,7 @@ jump:
             $absensi->scan_date = $scan;
             $absensi->pin = $pin;
             $absensi->verifymode = $verify;
-            $absensi->inoutmode = $verify;
+            $absensi->inoutmode = $status_scan;
             $absensi->reserved = 0;
             $absensi->work_code = 0;
             $absensi->att_id = "";
