@@ -26,7 +26,7 @@ class WhatsAppController extends Controller
                 'filename' => '',
                 'schedule' => '0',
                 'typing' => true,
-                'delay' => '60-120',
+                'delay' => '30-120',
                 'countryCode' => '62',
                 'file' => '',
                 'location' => ''
