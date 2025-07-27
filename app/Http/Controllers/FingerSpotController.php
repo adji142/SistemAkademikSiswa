@@ -341,8 +341,8 @@ jump:
                         Log::debug('Send WhatsApp');
 
                         $odata['message'] = $message;
-                        // $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
-                        // array_push($oMessageResponse, $oSend);
+                        $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
+                        array_push($oMessageResponse, $oSend);
                         $odata['data'] = $oMessageResponse;
                     } else {
                         Log::debug('Jangan Send WhatsApp');
