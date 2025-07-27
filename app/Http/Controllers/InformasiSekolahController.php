@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\InformasiSekolah;
+use App\Models\TemplateMessage;
 
 class InformasiSekolahController extends Controller
 {
     public function index()
     {
         $InformasiSekolah = InformasiSekolah::all();
+        $template = TemplateMessage::all();
 
         $title = 'Delete Informasi Sekolah!';
         $text = "Are you sure you want to delete ?";
@@ -19,6 +21,7 @@ class InformasiSekolahController extends Controller
 
         return view("master.GeneralSetting.InformasiSekolah", [
             'informasisekolah' => $InformasiSekolah,
+            'template' => $template,
         ]);
     }
 
@@ -54,6 +57,8 @@ class InformasiSekolahController extends Controller
                 					'TanggalSKPendirian' => $request->input('TanggalSKPendirian'),
                                     'SKIzinOperasional' => $request->input('SKIzinOperasional'),
                                     'TanggalSKOperasional' => $request->input('TanggalSKOperasional'),
+                                    'TemplateAbsenMasuk' => $request->input('TemplateAbsenMasuk'),
+                                    'TemplateAbsenKeluar' => $request->input('TemplateAbsenKeluar'),
                                 ]
                             );
 

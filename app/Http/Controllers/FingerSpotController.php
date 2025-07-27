@@ -18,6 +18,7 @@ use App\Models\AttLog;
 use App\Models\Guru;
 use App\Models\TemplateMessage;
 use App\Models\SendedLogModel;
+use App\Models\InformasiSekolah;
 
 class FingerSpotController extends Controller
 {
@@ -258,7 +259,8 @@ jump:
             $absensi->save();
 
             // Lanjutkan proses pengambilan data siswa dan kirim pesan
-            $template = TemplateMessage::where('id', '2')->first();
+            // $template = TemplateMessage::where('id', '2')->first();
+            $InformasiSekolah = InformasiSekolah::first();
             $currentDate = now()->toDateString();
             $oMessageResponse = [];
 
@@ -287,33 +289,66 @@ jump:
                     ->where('siswa.PINAbsensi', $pin)
                     ->get();
 
+                if($InformasiSekolah) {
+                    // $template = TemplateMessage::where('id', '2')->first();
+                    // in
+                    if ($status_scan == '0' &&
+                        isset($InformasiSekolah->TemplateAbsenMasuk) &&
+                        is_numeric($InformasiSekolah->TemplateAbsenMasuk) &&
+                        intval($InformasiSekolah->TemplateAbsenMasuk) > 0) {
+                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenMasuk)->first();
+                    }
+                    // out
+                    else if ( $status_scan == '1' &&
+                            isset($InformasiSekolah->TemplateAbsenKeluar) &&
+                            is_numeric($InformasiSekolah->TemplateAbsenKeluar) &&
+                            intval($InformasiSekolah->TemplateAbsenKeluar) > 0) {
+                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenKeluar)->first();
+                    } else {
+                        // $template = TemplateMessage::where('id', '1')->first();
+                        $odata['success'] = false;
+                        $odata['message'] = 'Status Scan tidak dikenali.';
+                        goto jump;
+                    }
+                } else {
+                    // $template = TemplateMessage::where('id', '1')->first();
+                    $odata['success'] = false;
+                    $odata['message'] = 'Informasi Sekolah tidak ditemukan.';
+                    goto jump;
+                }
+                
                 $message = $template->TemplateContent;
                 foreach ($absensiData->toArray()[0] as $key => $value) {
                     $message = str_replace("#$key#", $value, $message);
                 }
 
+                log::debug('Pesan yang akan dikirim:', ['message' => $message]);
+
                 if (!empty($NoTlpWali)) {
                     $oLog = SendedLogModel::where('pin', $pin)
                         ->where('LastSended', $currentDate)
+                        ->where('inoutmode', $status_scan)
                         ->first();
+                    log::debug('Log Sended:', ['log' => $oLog]);
 
                     if (!$oLog) {
                         $oLogInsert = new SendedLogModel();
                         $oLogInsert->pin = $pin;
                         $oLogInsert->LastSended = $currentDate;
+                        $oLogInsert->inoutmode = $status_scan;
                         $oLogInsert->save();
 
                         Log::debug('Send WhatsApp');
 
                         $odata['message'] = $message;
-                        $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
-                        array_push($oMessageResponse, $oSend);
+                        // $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
+                        // array_push($oMessageResponse, $oSend);
                         $odata['data'] = $oMessageResponse;
                     } else {
                         Log::debug('Jangan Send WhatsApp');
                     }
                 }
-
+jump:
                 Log::debug("Webhook Fingerspot:", [
                     'Result' => json_encode($odata, JSON_PRETTY_PRINT)
                 ]);

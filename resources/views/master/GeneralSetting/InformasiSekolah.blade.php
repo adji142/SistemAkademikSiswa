@@ -103,6 +103,34 @@
 											</fieldset>
 										</div>
 
+										<div class="col-md-6">
+											<label class="text-body">Template Absen Masuk</label>
+											<fieldset class="form-group mb-3">
+												<select class="form-control" id="TemplateAbsenMasuk" name="TemplateAbsenMasuk">
+													<option value="">Pilih Template Absen Masuk</option>
+													@foreach($template as $temp)
+														<option value="{{ $temp->id }}" {{ (count($informasisekolah) > 0 && $informasisekolah[0]['TemplateAbsenMasuk'] == $temp->id) ? 'selected' : '' }}>
+															{{ $temp->NamaTemplate }}
+														</option>
+													@endforeach
+												</select>
+											</fieldset>
+										</div>
+
+										<div class="col-md-6">
+											<label class="text-body">Template Absen Keluar</label>
+											<fieldset class="form-group mb-3">
+												<select class="form-control" id="TemplateAbsenKeluar" name="TemplateAbsenKeluar">
+													<option value="">Pilih Template Absen Keluar</option>
+													@foreach($template as $temp)
+														<option value="{{ $temp->id }}" {{ (count($informasisekolah) > 0 && $informasisekolah[0]['TemplateAbsenKeluar'] == $temp->id) ? 'selected' : '' }}>
+															{{ $temp->NamaTemplate }}
+														</option>
+													@endforeach
+												</select>
+											</fieldset>
+										</div>
+
 										<!-- Submit Button -->
 										<div class="col-md-12">
 											<button type="submit" class="btn btn-success text-white font-weight-bold me-1 mb-1">Simpan</button>
