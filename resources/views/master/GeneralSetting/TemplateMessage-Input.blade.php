@@ -73,6 +73,8 @@
                                             <button type="button" id="btTanggal" data-action="TanggalHariIni" class="btParameter btn btn-outline-secondary rounded-pill font-weight-bold me-1 mb-1">TanggalHariIni</button>
                                             <button type="button" id="btNamaHari" data-action="Hari" class="btParameter btn btn-outline-secondary rounded-pill font-weight-bold me-1 mb-1">Hari</button>
                                             <button type="button" id="btStatusKehadiran" data-action="StatusKehadiran" class="btParameter btn btn-outline-secondary rounded-pill font-weight-bold me-1 mb-1">StatusKehadiran</button>
+                                            <button type="button" id="btPinGuru" data-action="PINGuru" class="btParameter btn btn-outline-secondary rounded-pill font-weight-bold me-1 mb-1">PIN Guru</button>
+                                            <button type="button" id="btNamaGuru" data-action="NamaGuru" class="btParameter btn btn-outline-secondary rounded-pill font-weight-bold me-1 mb-1">PIN Guru</button>
                                             <hr>
                                             <fieldset class="form-group mb-12">
                                                 <textarea class="form-control" id="TemplateContent" name="TemplateContent" rows="5" placeholder="Masukan Template">{{ count($templatemessage) > 0 ? $templatemessage[0]['TemplateContent'] : '' }}</textarea>

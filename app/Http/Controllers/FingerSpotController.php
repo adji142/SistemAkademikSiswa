@@ -381,8 +381,8 @@ jump:
                 $oMessageResponse = [];
                 $NoTlpWali = $InformasiSekolah->NoHPPeneriaNotif;
 
-                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, guru.NIK ,
-                    guru.NamaGuru, '' NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
+                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, guru.NIK PINGuru,
+                    guru.NamaGuru, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
                     absensi.Scan_IN AS DataAbsenMasuk,absensi.Scan_OUT DataAbsenKeluar, NOW() TanggalHariIni, 
                     hari.NamaHariID AS Hari, CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
 
