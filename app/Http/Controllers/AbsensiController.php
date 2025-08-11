@@ -88,7 +88,7 @@ class AbsensiController extends Controller
         // $text = "Are you sure you want to delete ?";
         // confirmDelete($title, $text);
 
-        return view("absensi.absensiGuru", [
+        return view("absensi.absensiguru", [
             'absensi' => $absensi->get(),
             'oldTglAwal' => $TglAwal,
             'oldTglAkhir' => $TglAkhir
