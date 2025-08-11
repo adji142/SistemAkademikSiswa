@@ -15,7 +15,7 @@ use App\Models\UserRole;
 use App\Models\Permission;
 use App\Models\SubscriptionDetail;
 
-class RolesController extends Controller
+class rolesController extends Controller
 {
     public function View(Request $request)
     {

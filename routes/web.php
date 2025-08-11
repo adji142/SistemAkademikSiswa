@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RolesController;
+use App\Http\Controllers\rolesController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MesinAbsensiController;
 use App\Http\Controllers\TahunAjaranController;
@@ -52,12 +52,12 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout')->middl
 |--------------------------------------------------------------------------
 |
 */
-Route::get('/roles', [RolesController::class,'View'])->name('roles')->middleware('auth');
-Route::get('/roles/form/{id}', [RolesController::class,'Form'])->name('roles-form')->middleware('auth');
-Route::post('/roles/store', [RolesController::class, 'store'])->name('roles-store')->middleware('auth');
-Route::post('/roles/edit', [RolesController::class, 'edit'])->name('roles-edit')->middleware('auth');
-Route::delete('/roles/delete/{id}', [RolesController::class, 'deletedata'])->name('roles-delete')->middleware('auth');
-Route::get('/roles/export', [RolesController::class,'Export'])->name('roles-export')->middleware('auth');
+Route::get('/roles', [rolesController::class,'View'])->name('roles')->middleware('auth');
+Route::get('/roles/form/{id}', [rolesController::class,'Form'])->name('roles-form')->middleware('auth');
+Route::post('/roles/store', [rolesController::class, 'store'])->name('roles-store')->middleware('auth');
+Route::post('/roles/edit', [rolesController::class, 'edit'])->name('roles-edit')->middleware('auth');
+Route::delete('/roles/delete/{id}', [rolesController::class, 'deletedata'])->name('roles-delete')->middleware('auth');
+Route::get('/roles/export', [rolesController::class,'Export'])->name('roles-export')->middleware('auth');
 
 /*
 |--------------------------------------------------------------------------
