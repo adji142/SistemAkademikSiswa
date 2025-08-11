@@ -38,7 +38,7 @@ class GuruController extends Controller
         $kelas = Kelas::all(); // To populate a dropdown for Kelas
         $mapel = MataPelajaran::all();
 
-        return view("kesiswaan.Guru-Input", [
+        return view("kesiswaan.Guru-input", [
             'guru' => $guru,
             'kelas' => $kelas,
             'mapel' => $mapel

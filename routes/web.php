@@ -195,6 +195,7 @@ Route::get('get-mapel/{id}', [MataPelajaranController::class, 'getMapel']);
 */
 
 Route::get('/absensi', [AbsensiController::class,'index'])->name('absensi')->middleware('auth');
+Route::get('/absensiguru', [AbsensiController::class,'indexGuru'])->name('absensi-guru')->middleware('auth');
 // Route::get('/guru/form/{id}', [GuruController::class,'Form'])->name('guru-form')->middleware('auth');
 // Route::post('/guru/store', [GuruController::class, 'store'])->name('guru-store')->middleware('auth');
 // Route::post('/guru/edit', [GuruController::class, 'edit'])->name('guru-edit')->middleware('auth');

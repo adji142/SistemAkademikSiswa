@@ -117,6 +117,7 @@
 											</fieldset>
 										</div>
 
+										
 										<div class="col-md-6">
 											<label class="text-body">Template Absen Keluar</label>
 											<fieldset class="form-group mb-3">
@@ -124,6 +125,43 @@
 													<option value="">Pilih Template Absen Keluar</option>
 													@foreach($template as $temp)
 														<option value="{{ $temp->id }}" {{ (count($informasisekolah) > 0 && $informasisekolah[0]['TemplateAbsenKeluar'] == $temp->id) ? 'selected' : '' }}>
+															{{ $temp->NamaTemplate }}
+														</option>
+													@endforeach
+												</select>
+											</fieldset>
+										</div>
+
+
+										<div class="col-md-4">
+											<label class="text-body">Nomor Penerima Notifikasi Guru</label>
+											<fieldset class="form-group mb-3">
+												<input type="text" class="form-control" id="NoHPPeneriaNotif" name="NoHPPeneriaNotif" placeholder="Penerima Notifikasi Guru" value="{{ count($informasisekolah) > 0 ? $informasisekolah[0]['NoHPPeneriaNotif'] : '' }}" required="">
+											</fieldset>
+										</div>
+
+
+										<div class="col-md-4">
+											<label class="text-body">Template Absen Masuk Guru</label>
+											<fieldset class="form-group mb-3">
+												<select class="form-control" id="TemplateAbsenMasukGuru" name="TemplateAbsenMasukGuru">
+													<option value="">Pilih Template Absen Masuk Guru</option>
+													@foreach($template as $temp)
+														<option value="{{ $temp->id }}" {{ (count($informasisekolah) > 0 && $informasisekolah[0]['TemplateAbsenMasukGuru'] == $temp->id) ? 'selected' : '' }}>
+															{{ $temp->NamaTemplate }}
+														</option>
+													@endforeach
+												</select>
+											</fieldset>
+										</div>
+
+										<div class="col-md-4">
+											<label class="text-body">Template Absen Keluar Guru</label>
+											<fieldset class="form-group mb-3">
+												<select class="form-control" id="TemplateAbsenKeluarGuru" name="TemplateAbsenKeluarGuru">
+													<option value="">Pilih Template Absen Keluar</option>
+													@foreach($template as $temp)
+														<option value="{{ $temp->id }}" {{ (count($informasisekolah) > 0 && $informasisekolah[0]['TemplateAbsenKeluarGuru'] == $temp->id) ? 'selected' : '' }}>
 															{{ $temp->NamaTemplate }}
 														</option>
 													@endforeach

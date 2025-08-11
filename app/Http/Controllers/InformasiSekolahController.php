@@ -59,6 +59,9 @@ class InformasiSekolahController extends Controller
                                     'TanggalSKOperasional' => $request->input('TanggalSKOperasional'),
                                     'TemplateAbsenMasuk' => $request->input('TemplateAbsenMasuk'),
                                     'TemplateAbsenKeluar' => $request->input('TemplateAbsenKeluar'),
+                                    'NoHPPeneriaNotif' => $request->input('NoHPPeneriaNotif'),
+                                    'TemplateAbsenMasukGuru' => $request->input('TemplateAbsenMasukGuru'),
+                                    'TemplateAbsenKeluarGuru' => $request->input('TemplateAbsenKeluarGuru')
                                 ]
                             );
 

@@ -15,6 +15,7 @@ use App\Models\MesinAbsensi;
 use App\Models\Siswa;
 use App\Models\AppSetting;
 use App\Models\AttLog;
+use App\Models\AttLogGuru;
 use App\Models\Guru;
 use App\Models\TemplateMessage;
 use App\Models\SendedLogModel;
@@ -246,31 +247,142 @@ jump:
         ]);
 
         if ($type == 'attlog') {
-            // Simpan ke tabel attlog
-            $absensi = new AttLog();
-            $absensi->sn = $cloud_id;
-            $absensi->scan_date = $scan;
-            $absensi->pin = $pin;
-            $absensi->verifymode = $verify;
-            $absensi->inoutmode = $status_scan;
-            $absensi->reserved = 0;
-            $absensi->work_code = 0;
-            $absensi->att_id = "";
-            $absensi->save();
-
-            // Lanjutkan proses pengambilan data siswa dan kirim pesan
-            // $template = TemplateMessage::where('id', '2')->first();
             $InformasiSekolah = InformasiSekolah::first();
-            $currentDate = now()->toDateString();
-            $oMessageResponse = [];
 
-            $siswa = Siswa::where('PINAbsensi', $pin)->first();
+            // Simpan ke tabel attlog
 
-            if ($siswa) {
-                $NoTlpWali = $siswa->NoTlpWali;
 
-                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, siswa.NISN AS NISNSiswa,
-                    siswa.NamaSiswa, siswa.NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
+            $oDataMurid = Siswa::where('PINAbsensi', $pin)->first();
+            $oDataGuru = Guru::where('NIK', $pin)->first();
+
+            if($oDataMurid){
+                $absensi = new AttLog();
+                $absensi->sn = $cloud_id;
+                $absensi->scan_date = $scan;
+                $absensi->pin = $pin;
+                $absensi->verifymode = $verify;
+                $absensi->inoutmode = $status_scan;
+                $absensi->reserved = 0;
+                $absensi->work_code = 0;
+                $absensi->att_id = "";
+                $absensi->save();
+
+                // Lanjutkan proses pengambilan data siswa dan kirim pesan
+                // $template = TemplateMessage::where('id', '2')->first();
+                $currentDate = now()->toDateString();
+                $oMessageResponse = [];
+
+                $siswa = Siswa::where('PINAbsensi', $pin)->first();
+
+                if ($siswa) {
+                    $NoTlpWali = $siswa->NoTlpWali;
+
+                    $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, siswa.NISN AS NISNSiswa,
+                        siswa.NamaSiswa, siswa.NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
+                        absensi.Scan_IN AS DataAbsenMasuk,absensi.Scan_OUT DataAbsenKeluar, NOW() TanggalHariIni, 
+                        hari.NamaHariID AS Hari, CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
+
+                    $subAbsensi = DB::table('absensi')
+                        ->select('absensi.PIN', 'absensi.TanggalAbsen', 'absensi.Scan_IN', 'absensi.Scan_OUT')
+                        ->where('absensi.PIN', $pin);
+
+                    $absensiData = Siswa::selectRaw($SQL)
+                        ->leftJoinSub($subAbsensi, 'absensi', function ($join) {
+                            $join->on('siswa.PINAbsensi', 'absensi.PIN');
+                        })
+                        ->leftJoin('kelas', 'siswa.KelasID', 'kelas.id')
+                        ->leftJoin('kelasparalel', 'siswa.KelasParalelID', 'kelasparalel.id')
+                        ->leftJoin('datasekolah', DB::raw('1'), DB::raw('1'))
+                        ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN')
+                        ->where('siswa.PINAbsensi', $pin)
+                        ->get();
+
+                    if($InformasiSekolah) {
+                        // $template = TemplateMessage::where('id', '2')->first();
+                        // in
+                        if ($status_scan == '0' &&
+                            isset($InformasiSekolah->TemplateAbsenMasuk) &&
+                            is_numeric($InformasiSekolah->TemplateAbsenMasuk) &&
+                            intval($InformasiSekolah->TemplateAbsenMasuk) > 0) {
+                            $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenMasuk)->first();
+                        }
+                        // out
+                        else if ( $status_scan == '1' &&
+                                isset($InformasiSekolah->TemplateAbsenKeluar) &&
+                                is_numeric($InformasiSekolah->TemplateAbsenKeluar) &&
+                                intval($InformasiSekolah->TemplateAbsenKeluar) > 0) {
+                            $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenKeluar)->first();
+                        } else {
+                            // $template = TemplateMessage::where('id', '1')->first();
+                            $odata['success'] = false;
+                            $odata['message'] = 'Status Scan tidak dikenali.';
+                            goto jump;
+                        }
+                    } else {
+                        // $template = TemplateMessage::where('id', '1')->first();
+                        $odata['success'] = false;
+                        $odata['message'] = 'Informasi Sekolah tidak ditemukan.';
+                        goto jump;
+                    }
+                    
+                    $message = $template->TemplateContent;
+                    foreach ($absensiData->toArray()[0] as $key => $value) {
+                        $message = str_replace("#$key#", $value, $message);
+                    }
+
+                    log::debug('Pesan yang akan dikirim:', ['message' => $message]);
+
+                    if (!empty($NoTlpWali)) {
+                        $oLog = SendedLogModel::where('pin', $pin)
+                            ->where('LastSended', $currentDate)
+                            ->where('inoutmode', $status_scan)
+                            ->first();
+                        log::debug('Log Sended:', ['log' => $oLog]);
+
+                        if (!$oLog) {
+                            $oLogInsert = new SendedLogModel();
+                            $oLogInsert->pin = $pin;
+                            $oLogInsert->LastSended = $currentDate;
+                            $oLogInsert->inoutmode = $status_scan;
+                            $oLogInsert->save();
+
+                            Log::debug('Send WhatsApp');
+
+                            $odata['message'] = $message;
+                            $oSend = WhatsAppController::SendMessage($NoTlpWali, $message);
+                            array_push($oMessageResponse, $oSend);
+                            $odata['data'] = $oMessageResponse;
+                        } else {
+                            Log::debug('Jangan Send WhatsApp');
+                        }
+                    }
+    jump:
+                    Log::debug("Webhook Fingerspot:", [
+                        'Result' => json_encode($odata, JSON_PRETTY_PRINT)
+                    ]);
+                }
+            }
+            else if($oDataGuru){
+                
+                $absensi = new AttLog();
+                $absensi->sn = $cloud_id;
+                $absensi->scan_date = $scan;
+                $absensi->pin = $pin;
+                $absensi->verifymode = $verify;
+                $absensi->inoutmode = $status_scan;
+                $absensi->reserved = 0;
+                $absensi->work_code = 0;
+                $absensi->att_id = "";
+                $absensi->save();
+
+                // Lanjutkan proses pengambilan data siswa dan kirim pesan
+                // $template = TemplateMessage::where('id', '2')->first();
+                $currentDate = now()->toDateString();
+                $oMessageResponse = [];
+                $NoTlpWali = $InformasiSekolah->NoHPPeneriaNotif;
+
+                $SQL = "datasekolah.NamaSekolah, datasekolah.AlamatSekolah, guru.NIK ,
+                    guru.NamaGuru, '' NamaWali, COALESCE(CONCAT('Absen Masuk: ', absensi.Scan_IN, '\n','Absen Keluar: ', absensi.Scan_OUT),'') DataAbsen, 
                     absensi.Scan_IN AS DataAbsenMasuk,absensi.Scan_OUT DataAbsenKeluar, NOW() TanggalHariIni, 
                     hari.NamaHariID AS Hari, CASE WHEN absensi.Scan_IN IS NULL THEN 'Tidak Masuk Sekolah' ELSE 'Masuk Sekolah' END StatusKehadiran ";
 
@@ -278,43 +390,41 @@ jump:
                     ->select('absensi.PIN', 'absensi.TanggalAbsen', 'absensi.Scan_IN', 'absensi.Scan_OUT')
                     ->where('absensi.PIN', $pin);
 
-                $absensiData = Siswa::selectRaw($SQL)
+                $absensiData = Guru::selectRaw($SQL)
                     ->leftJoinSub($subAbsensi, 'absensi', function ($join) {
-                        $join->on('siswa.PINAbsensi', 'absensi.PIN');
+                        $join->on('guru.PINAbsensi', 'absensi.PIN');
                     })
-                    ->leftJoin('kelas', 'siswa.KelasID', 'kelas.id')
-                    ->leftJoin('kelasparalel', 'siswa.KelasParalelID', 'kelasparalel.id')
                     ->leftJoin('datasekolah', DB::raw('1'), DB::raw('1'))
                     ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN')
-                    ->where('siswa.PINAbsensi', $pin)
+                    ->where('guru.NIK', $pin)
                     ->get();
 
                 if($InformasiSekolah) {
                     // $template = TemplateMessage::where('id', '2')->first();
                     // in
                     if ($status_scan == '0' &&
-                        isset($InformasiSekolah->TemplateAbsenMasuk) &&
-                        is_numeric($InformasiSekolah->TemplateAbsenMasuk) &&
-                        intval($InformasiSekolah->TemplateAbsenMasuk) > 0) {
-                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenMasuk)->first();
+                        isset($InformasiSekolah->TemplateAbsenMasukGuru) &&
+                        is_numeric($InformasiSekolah->TemplateAbsenMasukGuru) &&
+                        intval($InformasiSekolah->TemplateAbsenMasukGuru) > 0) {
+                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenMasukGuru)->first();
                     }
                     // out
                     else if ( $status_scan == '1' &&
-                            isset($InformasiSekolah->TemplateAbsenKeluar) &&
-                            is_numeric($InformasiSekolah->TemplateAbsenKeluar) &&
-                            intval($InformasiSekolah->TemplateAbsenKeluar) > 0) {
-                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenKeluar)->first();
+                            isset($InformasiSekolah->TemplateAbsenKeluarGuru) &&
+                            is_numeric($InformasiSekolah->TemplateAbsenKeluarGuru) &&
+                            intval($InformasiSekolah->TemplateAbsenKeluarGuru) > 0) {
+                        $template = TemplateMessage::where('id', $InformasiSekolah->TemplateAbsenKeluarGuru)->first();
                     } else {
                         // $template = TemplateMessage::where('id', '1')->first();
                         $odata['success'] = false;
                         $odata['message'] = 'Status Scan tidak dikenali.';
-                        goto jump;
+                        goto jumpguru;
                     }
                 } else {
                     // $template = TemplateMessage::where('id', '1')->first();
                     $odata['success'] = false;
                     $odata['message'] = 'Informasi Sekolah tidak ditemukan.';
-                    goto jump;
+                    goto jumpguru;
                 }
                 
                 $message = $template->TemplateContent;
@@ -348,12 +458,20 @@ jump:
                         Log::debug('Jangan Send WhatsApp');
                     }
                 }
-jump:
+jumpguru:
                 Log::debug("Webhook Fingerspot:", [
                     'Result' => json_encode($odata, JSON_PRETTY_PRINT)
                 ]);
             }
-        } else {
+        } elseif ($type == 'set_userinfo') {
+            Log::debug('Webhook Fingerspot Diterima Dari Set User Info:', $request->all());
+        } elseif ($type == 'get_userinfo') {
+            Log::debug('Webhook Fingerspot Diterima Dari Get User Info:', $request->all());
+        } 
+        elseif ($type == 'register_online') {
+            Log::debug('Webhook Fingerspot Diterima Dari Register Online:', $request->all());
+        } 
+        else {
             Log::debug("Ini Bukan Attandance");
         }
     }
