@@ -32,7 +32,7 @@ class rolesController extends Controller
         $title = 'Delete Roles !';
         $text = "Are you sure you want to delete ?";
         confirmDelete($title, $text);
-        return view("master.Auth.Roles",[
+        return view("master.auth.Roles",[
             'roles' => $roles, 
         ]);
     }
@@ -169,7 +169,7 @@ class rolesController extends Controller
             array_push($oMenu, $temp);
 
         }
-        return view("master.Auth.Roles-Input",[
+        return view("master.auth.Roles-Input",[
             'roles' => $roles,
             'permissionrole' => $oMenu,
             'permission' => $permission
