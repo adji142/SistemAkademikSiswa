@@ -392,7 +392,7 @@ jump:
 
                 $absensiData = Guru::selectRaw($SQL)
                     ->leftJoinSub($subAbsensi, 'absensi', function ($join) {
-                        $join->on('guru.PINAbsensi', 'absensi.PIN');
+                        $join->on('guru.NIK', 'absensi.PIN');
                     })
                     ->leftJoin('datasekolah', DB::raw('1'), DB::raw('1'))
                     ->leftJoin('hari', DB::raw('DAYNAME(NOW())'), 'hari.NamaHariEN')
