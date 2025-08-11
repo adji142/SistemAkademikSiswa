@@ -364,7 +364,7 @@ jump:
             }
             else if($oDataGuru){
                 
-                $absensi = new AttLog();
+                $absensi = new AttLogGuru();
                 $absensi->sn = $cloud_id;
                 $absensi->scan_date = $scan;
                 $absensi->pin = $pin;
